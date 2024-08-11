@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Mapa de Calor</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        function cargarDepartamentos() {
+            let provinciaSelect = document.getElementById("provincia");
+            let departamentoSelect = document.getElementById("departamento");
+            let provincia = provinciaSelect.value;
+
+            // Vaciar opciones previas
+            departamentoSelect.innerHTML = "<option value=''>Selecciona un departamento</option>";
+
+            if (provincia === "Ciudad Autónoma de Buenos Aires") {
+                // Añadir las 15 comunas si se selecciona Ciudad Autónoma de Buenos Aires
+                for (let i = 1; i <= 15; i++) {
+                    let option = document.createElement("option");
+                    option.value = "Comuna " + i;
+                    option.text = "Comuna " + i;
+                    departamentoSelect.add(option);
+                }
+            } else {
+                // Aquí puedes tener un conjunto de datos de departamentos por provincia.
+                let departamentos = {
+                    "Buenos Aires": ["La Plata", "Mar del Plata", "Bahía Blanca"],
+                    "Córdoba": ["Córdoba", "Villa María", "Río Cuarto"],
+                    "Santa Fe": ["Rosario", "Santa Fe", "Rafaela"],
+                    // Añadir más provincias y departamentos según sea necesario
+                };
+
+                // Cargar departamentos para la provincia seleccionada
+                if (departamentos[provincia]) {
+                    departamentos[provincia].forEach(function(departamento) {
+                        let option = document.createElement("option");
+                        option.value = departamento;
+                        option.text = departamento;
+                        departamentoSelect.add(option);
+                    });
+                }
+            }
+        }
+
+        async function generarHeatmap() {
+            let form = document.getElementById("mapForm");
+            let provincia = form.provincia.value;
+            let departamento = form.departamento.value;
+            const response = await fetch('/run_heatmap', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ provincia: provincia, departamento: departamento })
+            });
+            const data = await response.json();
+            alert(data.status);
+            if (data.file_url) {
+                window.open(data.file_url, '_blank');
+            }
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Mapa de Calor</h1>
+    </header>
+    <main>
+        <form id="mapForm" onsubmit="event.preventDefault(); generarHeatmap();">
+            <label for="provincia">Provincia:</label>
+            <select id="provincia" name="provincia" onchange="cargarDepartamentos()" required>
+                <option value="">Selecciona una provincia</option>
+                <option value="Buenos Aires">Buenos Aires</option>
+                <option value="Catamarca">Catamarca</option>
+                <option value="Chaco">Chaco</option>
+                <option value="Chubut">Chubut</option>
+                <option value="Ciudad Autónoma de Buenos Aires">Ciudad Autónoma de Buenos Aires</option>
+                <option value="Corrientes">Corrientes</option>
+                <option value="Entre Ríos">Entre Ríos</option>
+                <option value="Formosa">Formosa</option>
+                <option value="Jujuy">Jujuy</option>
+                <option value="La Pampa">La Pampa</option>
+                <option value="La Rioja">La Rioja</option>
+                <option value="Mendoza">Mendoza</option>
+                <option value="Misiones">Misiones</option>
+                <option value="Neuquén">Neuquén</option>
+                <option value="Salta">Salta</option>
+                <option value="San Juan">San Juan</option>
+                <option value="San Luis">San Luis</option>
+                <option value="Santa Cruz">Santa Cruz</option>
+                <option value="Santa Fe">Santa Fe</option>
+                <option value="Santiago del Estero">Santiago del Estero</option>
+                <option value="Tierra del Fuego">Tierra del Fuego</option>
+            </select>
+            <br>
+            <label for="departamento">Departamento:</label>
+            <select id="departamento" name="departamento" required>
+                <option value="">Selecciona un departamento</option>
+                <!-- Los departamentos o comunas se cargarán aquí -->
+            </select>
+            <br>
+            <button type="submit">Generar Mapa</button>
+        </form>
+    </main>
+</body>
+</html>

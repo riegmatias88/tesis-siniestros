@@ -1,0 +1,156 @@
+/* Estilo general del cuerpo */
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #1c1c1c;
+    color: #e0e0e0;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+}
+
+/* Encabezado */
+header {
+    background-color: #2c2c2c;
+    color: #fff;
+    padding: 20px 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 2.5em;
+    font-weight: 300;
+}
+
+/* Navegación */
+nav {
+    margin: 30px auto;
+    width: 80%;
+    max-width: 800px;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+}
+
+nav ul li {
+    background-color: #333;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    text-align: center; /* Centra el texto dentro de cada elemento del menú */
+}
+
+nav ul li:hover {
+    background-color: #444;
+    transform: translateY(-3px);
+}
+
+nav ul li a {
+    color: #fff;
+    display: block;
+    padding: 15px 20px;
+    text-decoration: none;
+    font-size: 1.2em;
+    font-weight: 500;
+}
+
+nav ul li a:hover {
+    color: #ffd700;
+}
+
+/* Botones */
+button {
+    background-color: #5c6bc0;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 10px 0;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+button:hover {
+    background-color: #3f51b5;
+    transform: translateY(-2px);
+}
+
+button:active {
+    background-color: #303f9f;
+    transform: translateY(0);
+}
+
+/* Formularios */
+form {
+    background-color: #2c2c2c;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    max-width: 800px;
+    margin: 20px auto;
+}
+
+form h3 {
+    color: #ffd700;
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 5px;
+    color: #e0e0e0;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    background-color: #3c3c3c;
+    border: 1px solid #555;
+    border-radius: 5px;
+    color: #fff;
+    font-size: 1em;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group input[type="password"]:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: #ffd700;
+    outline: none;
+}
+
+.form-group input[type="radio"],
+.form-group input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+/* Pies de página */
+footer {
+    background-color: #2c2c2c;
+    color: #ccc;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 40px;
+    border-top: 1px solid #444;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.2);
+}

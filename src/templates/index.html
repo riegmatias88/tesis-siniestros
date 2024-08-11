@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú de Opciones</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script>
+        async function obtenerDatosClima() {
+            let fecha = prompt("Ingrese fecha (YYYY-MM-DD):");
+            let hora = prompt("Ingrese hora (HH:MM:SS):");
+            const response = await fetch('/get_clima', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ fecha: fecha, hora: hora })
+            });
+            const data = await response.json();
+            alert(`Temperatura: ${data.temperatura}°C, Precipitación: ${data.precip} mm`);
+        }
+         
+//        async function generarHeatmap() {
+//            let provincia = prompt("Ingrese provincia:");
+//            let departamento = prompt("Ingrese departamento:");
+//            const response = await fetch('/run_heatmap', {
+//                method: 'POST',
+//                headers: {
+//                    'Content-Type': 'application/json'
+//                },
+//                body: JSON.stringify({ provincia: provincia, departamento: departamento })
+//            });
+//            const data = await response.json();
+//            alert(data.status);
+//            if (data.file_url) {
+//                window.open(data.file_url, '_blank');
+//            }
+//        }
+
+        async function generarClustering() {
+            let provincia = prompt("Ingrese provincia:");
+            let departamento = prompt("Ingrese departamento:");
+            const response = await fetch('/run_clustering', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ provincia: provincia, departamento: departamento })
+            });
+            const data = await response.json();
+            alert(data.status);
+            if (data.file_url) {
+                window.open(data.file_url, '_blank');
+            }
+        }
+
+        async function generarClusteringZonas() {
+            let provincia = prompt("Ingrese provincia:");
+            let departamento = prompt("Ingrese departamento:");
+            const response = await fetch('/run_clustering_zonas', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ provincia: provincia, departamento: departamento })
+            });
+            const data = await response.json();
+            alert(data.status);
+            if (data.file_url) {
+                window.open(data.file_url, '_blank');
+            }
+        }
+
+        async function obtenerMaterial() {
+            let calle = prompt("Ingrese nombre de calle:");
+            let altura = prompt("Ingrese altura:");
+            let ciudad = prompt("Ingrese ciudad:");
+            const response = await fetch('/get_material', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ calle: calle, altura: altura, ciudad: ciudad })
+            });
+            const data = await response.json();
+            alert(`Material: ${data.material}`);
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <h1>Menú de Opciones</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#" onclick="obtenerDatosClima()">Obtener datos de clima</a></li>
+            <li><a href="/formheatmap">Generar mapa de calor con siniestros viales</a></li>
+            <li><a href="#" onclick="generarClustering()">Generar mapa con siniestros viales georreferenciados</a></li>
+            <li><a href="#" onclick="generarClusteringZonas()">Generar mapa de zonas con siniestros viales</a></li>
+            <li><a href="#" onclick="obtenerMaterial()">Devolver material de una calle</a></li>
+            <li><a href="/forminsitu">Form in-situ</a></li>
+            <li><a href="/logout">Salir</a></li>
+        </ul>
+    </nav>
+</body>
+</html>
