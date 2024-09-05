@@ -5,6 +5,7 @@ import numpy as np
 import pandas as pd
 import shapely.geometry
 from shapely.geometry import MultiPoint
+from flask import jsonify
 
 def fetch_data(db, provincia, departamento, localidad):
     query = f"""
@@ -82,7 +83,7 @@ def add_cluster_polygons_to_map(map, data):
                     popup=cluster_label
                 ).add_to(map)
 
-def run_clustering_zonas(provincia, departamento, localidad):
+def get_clusters(provincia, departamento, localidad):
     db = Database()
     data = fetch_data(db, provincia, departamento, localidad)
 
@@ -95,6 +96,15 @@ def run_clustering_zonas(provincia, departamento, localidad):
         data['cluster'] = clusters
         map = create_map(data)
         add_cluster_polygons_to_map(map, data)
-        map.save('static/clusteringmap_perimetro.html')
+        #map.save('static/clusteringmap_perimetro.html')
+        cluster_counts = data['cluster'].value_counts()
+        cluster_data = []
+        for cluster, count in cluster_counts.items():
+            if cluster != -1:
+                if count >= 10:
+                    cluster_data.append({"cluster_id": cluster, "count": count})
+            
+        #print(cluster_data)
+        return cluster_data
     else:
         print("No data returned from query or empty DataFrame")

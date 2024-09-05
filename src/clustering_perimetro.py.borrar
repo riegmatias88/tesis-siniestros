@@ -82,19 +82,56 @@ def add_cluster_polygons_to_map(map, data):
                     popup=cluster_label
                 ).add_to(map)
 
+def obtener_top_siniestros(data, top_n=10):
+    """
+    Obtiene el top N de ubicaciones con más siniestros.
+
+    Parámetros:
+    - data (DataFrame): El DataFrame que contiene los siniestros con columnas 'latitud', 'longitud', etc.
+    - top_n (int): El número de ubicaciones top a devolver (default: 10).
+
+    Retorna:
+    - Una lista de diccionarios con las ubicaciones top y el conteo de siniestros.
+    """
+    # Agrupa por latitud y longitud, y cuenta la cantidad de siniestros en cada ubicación
+    top_siniestros = (data.groupby(['latitud', 'longitud'])
+                      .size()
+                      .reset_index(name='cantidad')
+                      .sort_values(by='cantidad', ascending=False)
+                      .head(top_n))
+    
+    # Convertir el resultado a una lista de diccionarios para facilitar el envío al frontend
+    return top_siniestros.to_dict(orient='records')
+
+
 def run_clustering_zonas(provincia, departamento, localidad):
     db = Database()
     data = fetch_data(db, provincia, departamento, localidad)
+    
+    if data.empty:
+        return {"status": "No se encontraron datos para el clustering."}
 
-    if data is not None and not data.empty:
-        data[['latitud', 'longitud']] = data[['latitud', 'longitud']].astype(float)
-        coordinates = np.radians(data[['latitud', 'longitud']].values)
-        zona = get_zona(db, provincia, departamento, localidad)
-        dbscan = configure_dbscan(zona)
-        clusters = dbscan.fit_predict(coordinates)
-        data['cluster'] = clusters
-        map = create_map(data)
-        add_cluster_polygons_to_map(map, data)
-        map.save('static/clusteringmap_perimetro.html')
-    else:
-        print("No data returned from query or empty DataFrame")
+    zona = get_zona(db, provincia, departamento, localidad)
+    if zona is None:
+        return {"status": "No se pudo determinar la zona para el clustering."}
+
+    dbscan = configure_dbscan(zona)
+    data['cluster'] = dbscan.fit_predict(np.radians(data[['latitud', 'longitud']]))
+
+    # Obtener el top de siniestros
+    top_siniestros = obtener_top_siniestros(data)
+
+    # Crear el mapa
+    mapa = create_map(data)
+    add_cluster_polygons_to_map(mapa, data)
+    
+    # Guarda el mapa en un archivo HTML dentro de la carpeta static
+    mapa_file_path = "static/mapa_clustering.html"
+    mapa.save(mapa_file_path)
+
+    # Devolver tanto el mapa como el top de siniestros
+    return {
+        "status": "Clustering completado.",
+        "top_siniestros": top_siniestros,
+        "mapa_url": f"/{mapa_file_path}"
+    }
