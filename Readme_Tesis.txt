@@ -142,7 +142,7 @@ CREATE TABLE siniestros.via_material (
 
 
 
-DROP TABLE siniestros.siniestro;
+DROP TABLE siniestros.siniestro_old;
 CREATE TABLE siniestros.siniestro (
     provincia_desc VARCHAR(100),
     departamento_desc VARCHAR(100),
@@ -180,6 +180,54 @@ CREATE TABLE siniestros.siniestro (
 );
 
 
+CREATE TABLE `siniestro_2` (
+  `id` int AUTO_INCREMENT PRIMARY KEY,
+  `Siniestro_fecha` date NOT NULL,
+  `Siniestro_hora` time NOT NULL,
+  `Siniestro_franja_horaria_desc` varchar(50) DEFAULT NULL,
+  `Siniestro_zona_de_ocurrencia_desc` varchar(100) DEFAULT NULL,
+  `Siniestro_tipo_via_publica_id` int DEFAULT NULL,
+  `Siniestro_via` varchar(100) DEFAULT NULL,
+  `Siniestro_altura` int DEFAULT NULL,
+  `Siniestro_inteseccion` varchar(100) DEFAULT NULL,
+  `latitud` decimal(10,8) NOT NULL,
+  `longitud` decimal(11,8) NOT NULL,
+  `categoria_del_Siniestro_id` int DEFAULT NULL,
+  `tipo_Siniestro1_id` int DEFAULT NULL,
+  `tipo_Siniestro2_id` int DEFAULT NULL,
+  `tipo_Siniestro3_id` int DEFAULT NULL,
+  `Vehiculo` int DEFAULT NULL,
+  `Interviniente_Automóvil` int DEFAULT NULL,
+  `Interviniente_Motovehiculo` int DEFAULT NULL,
+  `Interviniente_Peatón` int DEFAULT NULL,
+  `Interviniente_Bicicleta` int DEFAULT NULL,
+  `Interviniente_Cuatriciclo` int DEFAULT NULL,
+  `Interviniente_Camioneta_Utilitario` int DEFAULT NULL,
+  `Interviniente_Transporte_de_carga` int DEFAULT NULL,
+  `Interviniente_Transporte_de_pasajeros` int DEFAULT NULL,
+  `Interviniente_Maquinaria` int DEFAULT NULL,
+  `Interviniente_Tracción_a_sangre` int DEFAULT NULL,
+  `Interviniente_veh_mov_personal` int DEFAULT NULL,
+  `Interviniente_tren` int DEFAULT NULL,
+  `Interviniente_Vehículo_oficial` int DEFAULT NULL,
+  `Interviniente_Otro` int DEFAULT NULL,
+  `Interviniente_Sin_datos` int DEFAULT NULL,
+  `localidad_id` int DEFAULT NULL,
+  UNIQUE KEY (`Siniestro_fecha`,`Siniestro_hora`,`latitud`,`longitud`),
+  KEY `Siniestro_tipo_via_publica_id` (`Siniestro_tipo_via_publica_id`),
+  KEY `tipo_Siniestro1_id` (`tipo_Siniestro1_id`),
+  KEY `tipo_Siniestro2_id` (`tipo_Siniestro2_id`),
+  KEY `tipo_Siniestro3_id` (`tipo_Siniestro3_id`),
+  KEY `categoria_del_Siniestro_id` (`categoria_del_Siniestro_id`),
+  CONSTRAINT `siniestro_ibfk_11` FOREIGN KEY (`Siniestro_tipo_via_publica_id`) REFERENCES `via_tipo` (`id`),
+  CONSTRAINT `siniestro_ibfk_21` FOREIGN KEY (`tipo_Siniestro1_id`) REFERENCES `siniestro_tipo` (`id`),
+  CONSTRAINT `siniestro_ibfk_31` FOREIGN KEY (`tipo_Siniestro2_id`) REFERENCES `siniestro_tipo` (`id`),
+  CONSTRAINT `siniestro_ibfk_41` FOREIGN KEY (`tipo_Siniestro3_id`) REFERENCES `siniestro_tipo` (`id`),
+  CONSTRAINT `siniestro_ibfk_51` FOREIGN KEY (`categoria_del_Siniestro_id`) REFERENCES `siniestro_categoria` (`id`)
+);
+
+
+
 ALTER TABLE siniestros.siniestro 
 ADD PRIMARY KEY (Siniestro_fecha, Siniestro_hora, latitud, longitud);
 
@@ -198,6 +246,96 @@ ADD FOREIGN KEY (tipo_Siniestro3_id) REFERENCES siniestro_tipo(id);
 ALTER TABLE siniestros.siniestro
 ADD FOREIGN KEY (categoria_del_Siniestro_id) REFERENCES siniestro_categoria(id);
 
+DROP TABLE siniestros.recomendacion;
+
+CREATE TABLE siniestros.recomendacion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fecha DATE,
+    estado VARCHAR(100),
+    nombre VARCHAR(255),
+    altura INT,
+    tipo VARCHAR(100),
+    material VARCHAR(100),
+    localidad VARCHAR(100),
+    departamento VARCHAR(100),
+    ciudad VARCHAR(100),
+    provincia VARCHAR(100),
+    ciclovia BOOLEAN,
+    semaforo_vehicular BOOLEAN,
+    semaforo_peatonal BOOLEAN,
+    semaforo_ciclista BOOLEAN,
+    senializacion_horizontal BOOLEAN,
+    senializacion_vertical BOOLEAN,
+    senializacion_temporal BOOLEAN,
+    chicana BOOLEAN,
+    bandas_reductoras BOOLEAN,
+    reductor_velocidad BOOLEAN,
+    mini_rotonda BOOLEAN,
+    meseta_elevada BOOLEAN,
+    isleta_giro BOOLEAN,
+    luminaria BOOLEAN
+);
+
+DROP TABLE siniestros.via;
+
+CREATE TABLE siniestros.via (
+  `id` int AUTO_INCREMENT PRIMARY KEY,
+  `nombre` varchar(100) NOT NULL,
+  `altura` int NOT NULL,
+  `tipo` int DEFAULT NULL,
+  `material` int DEFAULT NULL,
+  `estado` varchar(100) DEFAULT NULL,
+  `localidad_id` int NOT NULL,
+  `ciclovia` tinyint(1) DEFAULT NULL,
+  `semaforo_vehicular` tinyint(1) DEFAULT NULL,
+  `semaforo_peatonal` tinyint(1) DEFAULT NULL,
+  `semaforo_ciclista` tinyint(1) DEFAULT NULL,
+  `senializacion_horizontal` tinyint(1) DEFAULT NULL,
+  `senializacion_vertical` tinyint(1) DEFAULT NULL,
+  `senializacion_temporal` tinyint(1) DEFAULT NULL,
+  `chicana` tinyint(1) DEFAULT NULL,
+  `bandas_reductoras` tinyint(1) DEFAULT NULL,
+  `reductor_velocidad` tinyint(1) DEFAULT NULL,
+  `mini_rotonda` tinyint(1) DEFAULT NULL,
+  `meseta_elevada` tinyint(1) DEFAULT NULL,
+  `isleta_giro` tinyint(1) DEFAULT NULL,
+  `luminaria` varchar(100) DEFAULT NULL,
+  FOREIGN KEY (localidad_id) REFERENCES localidad(id)
+);
+
+DROP TABLE siniestros.recomendacion (
+
+CREATE TABLE siniestros.recomendacion (
+  `id` int AUTO_INCREMENT PRIMARY KEY,
+  `via_id` int NOT NULL,
+  `fecha` date DEFAULT NULL,
+  `estado` varchar(100) DEFAULT NULL,
+  `nombre` varchar(255) DEFAULT NULL,
+  `altura` int DEFAULT NULL,
+  `tipo` varchar(100) DEFAULT NULL,
+  `material` varchar(100) DEFAULT NULL,
+  `localidad` varchar(100) DEFAULT NULL,
+  `departamento` varchar(100) DEFAULT NULL,
+  `ciudad` varchar(100) DEFAULT NULL,
+  `provincia` varchar(100) DEFAULT NULL,
+  `ciclovia` tinyint(1) DEFAULT NULL,
+  `semaforo_vehicular` tinyint(1) DEFAULT NULL,
+  `semaforo_peatonal` tinyint(1) DEFAULT NULL,
+  `semaforo_ciclista` tinyint(1) DEFAULT NULL,
+  `senializacion_horizontal` tinyint(1) DEFAULT NULL,
+  `senializacion_vertical` tinyint(1) DEFAULT NULL,
+  `senializacion_temporal` tinyint(1) DEFAULT NULL,
+  `chicana` tinyint(1) DEFAULT NULL,
+  `bandas_reductoras` tinyint(1) DEFAULT NULL,
+  `lomo_de_burro` tinyint(1) DEFAULT NULL,
+  `mini_rotonda` tinyint(1) DEFAULT NULL,
+  `meseta_elevada` tinyint(1) DEFAULT NULL,
+  `isleta_giro` tinyint(1) DEFAULT NULL,
+  `luminaria` tinyint(1) DEFAULT NULL,
+  FOREIGN KEY (via_id) REFERENCES via(id)
+);
+
+###############################################################################
 
 --DEPURO DATOS INVALIDOS
 

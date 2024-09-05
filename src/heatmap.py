@@ -4,27 +4,24 @@ from folium.plugins import HeatMap
 from database import Database
 import sys
 
-#def get_user_input():
-#    provincia = input("Ingrese provincia: ")
-#    departamento = input("Ingrese departamento: ")
-#    return provincia, departamento
-
-def fetch_data(db, provincia, departamento):
+def fetch_data(db, provincia, departamento, localidad):
     query = f"""
-    SELECT latitud, longitud 
-    FROM siniestro 
-    WHERE categoria_del_Siniestro_id in (1,2) 
-    AND provincia_desc = '{provincia}' 
-    AND departamento_desc = '{departamento}'
+    SELECT s.latitud, s.longitud 
+    FROM siniestro s
+    INNER JOIN localidad l ON (s.localidad_id = l.id)
+    WHERE s.categoria_del_Siniestro_id in (1,2) 
+    AND l.provincia_desc = '{provincia}'
+    AND l.departamento_desc = '{departamento}'
+    AND l.localidad_desc = '{localidad}'
     """
     data = db.execute_query(query)
     return data
 
 ## Main ##
-def run_heatmap(provincia, departamento):
+def run_heatmap(provincia, departamento, localidad):
     db = Database()
     #provincia, departamento = get_user_input()
-    df = fetch_data(db, provincia, departamento)
+    df = fetch_data(db, provincia, departamento, localidad)
 
     #df = db.execute_query(query)
 

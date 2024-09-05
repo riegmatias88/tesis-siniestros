@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recomendaciones Basadas en un Punto</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Seleccione un punto en el mapa para recibir recomendaciones</h1>
+    </header>
+    <main>
+        <div id="map"></div>
+        <div id="recomendaciones">
+            <!-- Aquí se mostrarán las recomendaciones -->
+        </div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        // Inicializar el mapa
+        var map = L.map('map').setView([-34.603722, -58.381592], 12); // Coordenadas de Buenos Aires
+
+        // Cargar el tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+        }).addTo(map);
+
+        // Función para manejar la selección de un punto
+        function onMapClick(e) {
+            var lat = e.latlng.lat;
+            var lng = e.latlng.lng;
+
+            // Enviar coordenadas al backend para obtener recomendaciones
+            fetch('/get_recomendaciones', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ lat: lat, lng: lng })
+            })
+            .then(response => response.json())
+            .then(data => {
+                mostrarRecomendaciones(data);
+            })
+            .catch(error => console.error('Error al obtener recomendaciones:', error));
+        }
+
+        // Asignar la función al evento de clic en el mapa
+        map.on('click', onMapClick);
+
+        // Función para mostrar las recomendaciones
+        function mostrarRecomendaciones(data) {
+            var recomendacionesDiv = document.getElementById('recomendaciones');
+            recomendacionesDiv.innerHTML = "<h3>Recomendaciones para el punto seleccionado:</h3>";
+
+            data.recomendaciones.forEach((rec, index) => {
+                var p = document.createElement("p");
+                p.textContent = `${index + 1}. ${rec}`;
+                recomendacionesDiv.appendChild(p);
+            });
+        }
+    </script>
+</body>
+</html>

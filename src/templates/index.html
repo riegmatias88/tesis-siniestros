@@ -19,57 +19,6 @@
             const data = await response.json();
             alert(`Temperatura: ${data.temperatura}°C, Precipitación: ${data.precip} mm`);
         }
-         
-//        async function generarHeatmap() {
-//            let provincia = prompt("Ingrese provincia:");
-//            let departamento = prompt("Ingrese departamento:");
-//            const response = await fetch('/run_heatmap', {
-//                method: 'POST',
-//                headers: {
-//                    'Content-Type': 'application/json'
-//                },
-//                body: JSON.stringify({ provincia: provincia, departamento: departamento })
-//            });
-//            const data = await response.json();
-//            alert(data.status);
-//            if (data.file_url) {
-//                window.open(data.file_url, '_blank');
-//            }
-//        }
-
-        async function generarClustering() {
-            let provincia = prompt("Ingrese provincia:");
-            let departamento = prompt("Ingrese departamento:");
-            const response = await fetch('/run_clustering', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ provincia: provincia, departamento: departamento })
-            });
-            const data = await response.json();
-            alert(data.status);
-            if (data.file_url) {
-                window.open(data.file_url, '_blank');
-            }
-        }
-
-        async function generarClusteringZonas() {
-            let provincia = prompt("Ingrese provincia:");
-            let departamento = prompt("Ingrese departamento:");
-            const response = await fetch('/run_clustering_zonas', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ provincia: provincia, departamento: departamento })
-            });
-            const data = await response.json();
-            alert(data.status);
-            if (data.file_url) {
-                window.open(data.file_url, '_blank');
-            }
-        }
 
         async function obtenerMaterial() {
             let calle = prompt("Ingrese nombre de calle:");
@@ -93,12 +42,11 @@
     </header>
     <nav>
         <ul>
-            <li><a href="#" onclick="obtenerDatosClima()">Obtener datos de clima</a></li>
-            <li><a href="/formheatmap">Generar mapa de calor con siniestros viales</a></li>
-            <li><a href="#" onclick="generarClustering()">Generar mapa con siniestros viales georreferenciados</a></li>
-            <li><a href="#" onclick="generarClusteringZonas()">Generar mapa de zonas con siniestros viales</a></li>
-            <li><a href="#" onclick="obtenerMaterial()">Devolver material de una calle</a></li>
-            <li><a href="/forminsitu">Form in-situ</a></li>
+            <li><a href="/formgeoreference">Georreferenciar siniestros viales</a></li>
+            <li><a href="/formheatmap">Mapa de calor con siniestros viales</a></li>
+            <li><a href="/formagruparzonas">Agrupar siniestros viales por zona</a></li>
+            <li><a href="/forminsitu_menu">Formulario Inspección in-situ</a></li>
+            <li><a href="/formrecomendacion">Recomendaciones</a></li>
             <li><a href="/logout">Salir</a></li>
         </ul>
     </nav>

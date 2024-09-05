@@ -1,7 +1,7 @@
 from database import Database
 
 class Via:
-    def __init__(self, db,nombre=None, altura=None, tipo=None, material=None, estado=None, localidad=None, departamento=None, ciudad=None, provincia=None, ciclovia=None, semaforo_vehicular=None, semaforo_peatonal=None, semaforo_ciclista=None, senializacion_horizontal=None, senializacion_vertical=None, senializacion_temporal=None, chicana=None, bandas_reductoras=None, lomo_de_burro=None, mini_rotonda=None, meseta_elevada=None, isleta_giro=None, luminaria=None):        
+    def __init__(self, db, nombre=None, altura=None, tipo=None, material=None, estado=None, localidad=None, departamento=None, ciudad=None, provincia=None, ciclovia=None, semaforo_vehicular=None, semaforo_peatonal=None, semaforo_ciclista=None, senializacion_horizontal=None, senializacion_vertical=None, senializacion_temporal=None, chicana=None, bandas_reductoras=None, lomo_de_burro=None, mini_rotonda=None, meseta_elevada=None, isleta_giro=None, luminaria=None):        
         self.db = db
         self.nombre = nombre
         self.altura = altura

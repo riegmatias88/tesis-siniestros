@@ -4,174 +4,573 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Inspección In Situ</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='form_styles.css') }}">
 </head>
+
 <body>
-    <h1>Formulario de Inspección In Situ</h1>
-    <h2>Vias asfaltadas:</h2>
+    <header>
+        <h1>Formulario de Inspección</h1>
+    </header>
 
-    <div class="form-section">
-        <h3>Estado de conservación de la calzada:</h3>
-        <div class="form-group">
-            <label for="agrietamientos">1.1 ¿Existen agrietamientos?</label><br>
-            <input type="radio" id="agrietamientos-si" name="agrietamientos" value="si">
-            <label for="agrietamientos-si">Sí</label>
-            <input type="radio" id="agrietamientos-no" name="agrietamientos" value="no">
-            <label for="agrietamientos-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="hundimientos">1.2 ¿Existen hundimientos?</label><br>
-            <input type="radio" id="hundimientos-si" name="hundimientos" value="si">
-            <label for="hundimientos-si">Sí</label>
-            <input type="radio" id="hundimientos-no" name="hundimientos" value="no">
-            <label for="hundimientos-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="baches">1.3 ¿Existen baches?</label><br>
-            <input type="radio" id="baches-si" name="baches" value="si">
-            <label for="baches-si">Sí</label>
-            <input type="radio" id="baches-no" name="baches" value="no">
-            <label for="baches-no">No</label>
-        </div>
+    <h2>Para vias asfaltadas</h2>
+
+    <div id="progreso">
+        <h2 id="progreso-texto">1 de 2</h2>
     </div>
 
-    <div class="form-section">
-        <div class="form-group">
-            <label for="orden-limpieza">2 ¿Existe orden y limpieza en las vías de circulación?</label><br>
-            <input type="radio" id="orden-limpieza-si" name="orden-limpieza" value="si">
-            <label for="orden-limpieza-si">Sí</label>
-            <input type="radio" id="orden-limpieza-no" name="orden-limpieza" value="no">
-            <label for="orden-limpieza-no">No</label>
-        </div>
+    <!-- Primer Paso -->
+    <div id="paso-1" class="form-step">
+
+        <form>
+
+            <div class="form-section">
+                <header><h3>Caracteristicas generales</h3></header>
+                <header><h4>Estado de conservación de la calzada</h4></header>
+                <div class="form-group">
+                    <label for="agrietamientos">1.1 ¿Existen agrietamientos?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="agrietamientos-si" name="agrietamientos" value="si"> Si</label>
+                        <label><input type="radio" id="agrietamientos-no" name="agrietamientos" value="no"> No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="hundimientos">1.2 ¿Existen hundimientos?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="hundimientos-si" name="hundimientos" value="si"> Si</label>
+                        <label><input type="radio" id="hundimientos-no" name="hundimientos" value="no"> No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="baches">1.3 ¿Existen baches?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="baches-si" name="baches" value="si"> Si</label>
+                        <label><input type="radio" id="baches-no" name="baches" value="no"> No</label>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="orden-limpieza">2 ¿Existe orden y limpieza en las vías de circulación?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="orden-limpieza-si" name="orden-limpieza" value="si"> Si</label>
+                        <label><input type="radio" id="orden-limpieza-no" name="orden-limpieza" value="no"> No</label>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="iluminacion">3 ¿Existe iluminación artificial?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="iluminacion-si" name="iluminacion" value="si"> Si</label>
+                        <label><input type="radio" id="iluminacion-no" name="iluminacion" value="no"> No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="iluminacion-uniforme">4 ¿La iluminación artificial es uniforme?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="iluminacion-uniforme-si" name="iluminacion-uniforme" value="si"> Si</label>
+                        <label><input type="radio" id="iluminacion-uniforme-no" name="iluminacion-uniforme" value="no"> No</label>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="veredas-optimas">5 ¿Las veredas se encuentran en estado óptimo para transitar?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="veredas-optimas-si" name="veredas-optimas" value="si"> Si</label>
+                        <label><input type="radio" id="veredas-optimas-no" name="veredas-optimas" value="no"> No</label>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="carril-omnibuses">6 ¿Existe carril exclusivo para ómnibus de transporte de pasajeros?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="carril-omnibuses-si" name="carril-omnibuses" value="si"> Si</label>
+                        <label><input type="radio" id="carril-omnibuses-no" name="carril-omnibuses" value="no"> No</label>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="senalizacion-paradas">7 ¿Existe señalización de paradas establecidas para ómnibus?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="senalizacion-paradas-si" name="senalizacion-paradas" value="si"> Si</label>
+                        <label><input type="radio" id="senalizacion-paradas-no" name="senalizacion-paradas" value="no"> No</label>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="form-section">
+                <header><h3>Señalización vial uniforme</h3></header>
+                <header><h4>Señalamiento horizontal en calles y avenidas</h4></header>
+                <div class="form-group">
+                    <label for="demarcacion-separacion-carriles">8.1 ¿Existe demarcación horizontal respecto a la separación de carriles?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="demarcacion-separacion-carriles-si" name="demarcacion-separacion-carriles" value="si"> Si</label>
+                        <label><input type="radio" id="demarcacion-separacion-carriles-no" name="demarcacion-separacion-carriles" value="no"> No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="demarcacion-doble-sentido">8.2 ¿Existe demarcación horizontal en vías con doble sentido de circulación?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="demarcacion-doble-sentido-si" name="demarcacion-doble-sentido" value="si"> Si</label>
+                        <label><input type="radio" id="demarcacion-doble-sentido-no" name="demarcacion-doble-sentido" value="no"> No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="demarcacion-visible">8.3 ¿Son visibles en toda circunstancia (de día y de noche)?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="demarcacion-visible-si" name="demarcacion-visible" value="si"> Si</label>
+                        <label><input type="radio" id="demarcacion-visible-no" name="demarcacion-visible" value="no"> No</label>
+                    </div>
+                </div>    
+            </div>
+        
+            <div class="form-section">
+                <header><h4>Señalamiento vertical en calles y avenidas</h4></header>
+                <div class="form-group">
+                    <label for="seniales-advertencia">9.1 ¿Existen señales verticales preventivas o de advertencia?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="seniales-advertencia-si" name="seniales-advertencia" value="si"> Si</label>
+                        <label><input type="radio" id="seniales-advertencia-no" name="seniales-advertencia" value="no"> No</label>
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label for="seniales-reglamentarias">9.2 ¿Existen señales verticales reglamentarias o prescriptivas?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="seniales-reglamentarias-si" name="seniales-reglamentarias" value="si"> Si</label>
+                        <label><input type="radio" id="seniales-reglamentarias-no" name="seniales-reglamentarias" value="no"> No</label>
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label for="seniales-maximo">9.3 ¿Existen señales verticales de máximo peligro?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="seniales-maximo-si" name="seniales-maximo" value="si"> Si</label>
+                        <label><input type="radio" id="seniales-maximo-no" name="seniales-maximo" value="no"> No</label>
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label for="seniales-informativas">9.4 ¿Existen señales informativas?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="seniales-informativas-si" name="seniales-informativas" value="si"> Si</label>
+                        <label><input type="radio" id="seniales-informativas-no" name="seniales-informativas" value="no"> No</label>
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label for="seniales-nomencladas">9.5 ¿Las vías se encuentran señalizadas con sus respectivos nombres y altura catastral? (Nomencladores)</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="seniales-nomencladas-si" name="seniales-nomencladas" value="si"> Si</label>
+                        <label><input type="radio" id="seniales-nomencladas-no" name="seniales-nomencladas" value="no"> No</label>
+                    </div>
+                </div>
+        
+                <div class="form-group">
+                    <label for="seniales-obstaculizadas">9.6 ¿Se encuentran obstaculizadas por condiciones climáticas o vegetación?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="seniales-obstaculizadas-si" name="seniales-obstaculizadas" value="si"> Si</label>
+                        <label><input type="radio" id="seniales-obstaculizadas-no" name="seniales-obstaculizadas" value="no"> No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="seniales-redundante">9.7 ¿La señalización es redundante, confusa o con mucha información?</label><br>
+                    <div class="form-group-inline">
+                        <label><input type="radio" id="seniales-redundante-si" name="seniales-redundante" value="si"> Si</label>
+                        <label><input type="radio" id="seniales-redundante-no" name="seniales-redundante" value="no"> No</label>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="next-button">Siguiente</button>
+    
+    
+        </form>
     </div>
 
-    <div class="form-section">
-        <div class="form-group">
-            <label for="iluminacion">3 ¿Existe iluminación artificial?</label><br>
-            <input type="radio" id="iluminacion-si" name="iluminacion" value="si">
-            <label for="iluminacion-si">Sí</label>
-            <input type="radio" id="iluminacion-no" name="iluminacion" value="no">
-            <label for="iluminacion-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="iluminacion-uniforme">4 ¿La iluminación artificial es uniforme?</label><br>
-            <input type="radio" id="iluminacion-uniforme-si" name="iluminacion-uniforme" value="si">
-            <label for="iluminacion-uniforme-si">Sí</label>
-            <input type="radio" id="iluminacion-uniforme-no" name="iluminacion-uniforme" value="no">
-            <label for="iluminacion-uniforme-no">No</label>
-        </div>
+    <!-- Segundo Paso -->
+    <div id="paso-2" class="form-step" style="display:none;">
+
+        <form>
+
+            <div class="form-section">
+                <header><h3>Intersecciones</h3></header>
+                <header><h4>Caracteristicas generales</h4></header>
+                <div class="form-group">
+                    <label for="vias-distinta-superficie">1 ¿Confluyen vías de distinta superficie? (Ej. tierra o ripio)</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="vias-distinta-superficie-si" name="vias-distinta-superficie" value="si">
+                        <label for="vias-distinta-superficie-si">Sí</label>
+                        <input type="radio" id="vias-distinta-superficie-no" name="vias-distinta-superficie" value="no">
+                        <label for="vias-distinta-superficie-no">No</label>
+                    </div>
+                </div>
+    
+                <div class="form-group">
+                    <label for="cruzan-dos-vias">2 ¿Se encuentran o cruzan más de dos vías de circulación?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="cruzan-dos-vias-si" name="cruzan-dos-vias" value="si">
+                        <label for="cruzan-dos-vias-si">Sí</label>
+                        <input type="radio" id="cruzan-dos-vias-no" name="cruzan-dos-vias" value="no">
+                        <label for="cruzan-dos-vias-no">No</label>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="form-section">
+                <header><h4>Estado de conservación de la calzada</h4></header>
+                <div class="form-group">
+                    <label for="agrietamientos">3.1 ¿Existen agrietamientos?</label><br>
+                        <div class="form-group-inline">
+                        <input type="radio" id="agrietamientos-si" name="agrietamientos" value="si">
+                        <label for="agrietamientos-si">Sí</label>
+                        <input type="radio" id="agrietamientos-no" name="agrietamientos" value="no">
+                        <label for="agrietamientos-no">No</label>
+                </div>
+                <div class="form-group">
+                    <label for="hundimientos">3.2 ¿Existen hundimientos?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="hundimientos-si" name="hundimientos" value="si">
+                        <label for="hundimientos-si">Sí</label>
+                        <input type="radio" id="hundimientos-no" name="hundimientos" value="no">
+                        <label for="hundimientos-no">No</label>
+                </div>
+                <div class="form-group">
+                    <label for="baches">3.3 ¿Existen baches?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="baches-si" name="baches" value="si">
+                        <label for="baches-si">Sí</label>
+                        <input type="radio" id="baches-no" name="baches" value="no">
+                        <label for="baches-no">No</label>
+                </div>
+            </div>
+    
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="visualizacion-cruce">4 ¿Se visualiza el cruce desde una distancia segura?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="visualizacion-cruce-si" name="visualizacion-cruce" value="si">
+                        <label for="visualizacion-cruce-si">Sí</label>
+                        <input type="radio" id="visualizacion-cruce-no" name="visualizacion-cruce" value="no">
+                        <label for="visualizacion-cruce-no">No</label>
+                </div>
+                <div class="form-group">
+                    <label for="obstruccion-visual">5 ¿Existe obstrucción visual para los vehículos que se aproximan? (autos mal estacionados, árboles, contenedores de basura)</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="obstruccion-visual-si" name="obstruccion-visual" value="si">
+                        <label for="obstruccion-visual-si">Sí</label>
+                        <input type="radio" id="obstruccion-visual-no" name="obstruccion-visual" value="no">
+                        <label for="obstruccion-visual-no">No</label>
+                </div>
+                <div class="form-group">
+                    <label for="peatones-visibles">6 ¿Los peatones pueden ser vistos por los conductores con la suficiente anticipación?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="peatones-visibles-si" name="peatones-visibles" value="si">
+                        <label for="peatones-visibles-si">Sí</label>
+                        <input type="radio" id="peatones-visibles-no" name="peatones-visibles" value="no">
+                        <label for="peatones-visibles-no">No</label>
+                </div>
+            </div>
+    
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="iluminacion">7 ¿Existe iluminación artificial?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="iluminacion-si" name="iluminacion" value="si">
+                        <label for="iluminacion-si">Sí</label>
+                        <input type="radio" id="iluminacion-no" name="iluminacion" value="no">
+                        <label for="iluminacion-no">No</label>
+                </div>
+                <div class="form-group">
+                    <label for="iluminacion-uniforme">8 ¿La iluminación artificial es uniforme?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="iluminacion-uniforme-si" name="iluminacion-uniforme" value="si">
+                        <label for="iluminacion-uniforme-si">Sí</label>
+                        <input type="radio" id="iluminacion-uniforme-no" name="iluminacion-uniforme" value="no">
+                        <label for="iluminacion-uniforme-no">No</label>
+                </div>
+                <div class="form-group">
+                    <label for="iluminacion-obstaculizada">9 ¿La iluminación artificial está obstaculizada? (Ej. por interposición de árboles)</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="iluminacion-obstaculizada-si" name="iluminacion-obstaculizada" value="si">
+                        <label for="iluminacion-obstaculizada-si">Sí</label>
+                        <input type="radio" id="iluminacion-obstaculizada-no" name="iluminacion-obstaculizada" value="no">
+                        <label for="iluminacion-obstaculizada-no">No</label>
+                </div>
+            </div>
+    
+            <div class="form-section">
+                <div class="form-group">
+                    <label for="reductores-velocidad">10 ¿Previo al cruce existen reductores de velocidad?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="reductores-velocidad-si" name="reductores-velocidad" value="si">
+                        <label for="reductores-velocidad-si">Sí</label>
+                        <input type="radio" id="reductores-velocidad-no" name="reductores-velocidad" value="no">
+                        <label for="reductores-velocidad-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="badenes-canaletas">11 ¿Existen badenes con canaletas para que el agua drene?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="badenes-canaletas-si" name="badenes-canaletas" value="si">
+                        <label for="badenes-canaletas-si">Sí</label>
+                        <input type="radio" id="badenes-canaletas-no" name="badenes-canaletas" value="no">
+                        <label for="badenes-canaletas-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="objetos-rigidos">12 ¿Existen objetos rígidos (postes u otro objeto) cerca del cordón?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="objetos-rigidos-si" name="objetos-rigidos" value="si">
+                        <label for="objetos-rigidos-si">Sí</label>
+                        <input type="radio" id="objetos-rigidos-no" name="objetos-rigidos" value="no">
+                        <label for="objetos-rigidos-no">No</label>
+                    </div>
+                </div>
+            </div>
+    
+            <div class="form-section">
+                <header><h3>Señalización vial uniforme</h3></header>
+                
+                <header><h4>Señalización horizontal</h4></header>
+                <div class="form-group">
+                    <label for="sendas-peatonales">13.1 ¿Existen sendas peatonales?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="sendas-peatonales-si" name="sendas-peatonales" value="si">
+                        <label for="sendas-peatonales-si">Sí</label>
+                        <input type="radio" id="sendas-peatonales-no" name="sendas-peatonales" value="no">
+                        <label for="sendas-peatonales-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="lineas-pare">13.2 ¿Hay presencia de líneas de pare?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="lineas-pare-si" name="lineas-pare" value="si">
+                        <label for="lineas-pare-si">Sí</label>
+                        <input type="radio" id="lineas-pare-no" name="lineas-pare" value="no">
+                        <label for="lineas-pare-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cordones-pintados">13.3 ¿Hay presencia de cordones pintados de color amarillo y/o rojos?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="cordones-pintados-si" name="cordones-pintados" value="si">
+                        <label for="cordones-pintados-si">Sí</label>
+                        <input type="radio" id="cordones-pintados-no" name="cordones-pintados" value="no">
+                        <label for="cordones-pintados-no">No</label>
+                    </div>
+                </div>
+    
+                <header><h4>Señalización vertical</h4></header>
+                <div class="form-group">
+                    <label for="senales-cruce-peatones">14.1 ¿Existen señales de cruce de peatones?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="senales-cruce-peatones-si" name="senales-cruce-peatones" value="si">
+                        <label for="senales-cruce-peatones-si">Sí</label>
+                        <input type="radio" id="senales-cruce-peatones-no" name="senales-cruce-peatones" value="no">
+                        <label for="senales-cruce-peatones-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="limitacion-velocidad">14.2 ¿Existen limitaciones de máxima velocidad?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="limitacion-velocidad-si" name="limitacion-velocidad" value="si">
+                        <label for="limitacion-velocidad-si">Sí</label>
+                        <input type="radio" id="limitacion-velocidad-no" name="limitacion-velocidad" value="no">
+                        <label for="limitacion-velocidad-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="senales-pare">14.3 ¿Existen señales de ceda el paso o pare?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="senales-pare-si" name="senales-pare" value="si">
+                        <label for="senales-pare-si">Sí</label>
+                        <input type="radio" id="senales-pare-no" name="senales-pare" value="no">
+                        <label for="senales-pare-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="senales-cruce">14.4 ¿Existen señales de proximidad de cruce?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="senales-cruce-si" name="senales-cruce" value="si">
+                        <label for="senales-cruce-si">Sí</label>
+                        <input type="radio" id="senales-cruce-no" name="senales-cruce" value="no">
+                        <label for="senales-cruce-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="senales-ciclovia">14.5 ¿Existen señales advirtiendo el cruce de una ciclovía?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="senales-ciclovia-si" name="senales-ciclovia" value="si">
+                        <label for="senales-ciclovia-si">Sí</label>
+                        <input type="radio" id="senales-ciclovia-no" name="senales-ciclovia" value="no">
+                        <label for="senales-ciclovia-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="senales-reductores">14.6 ¿Los reductores de velocidad se encuentran señalizados verticalmente?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="senales-reductores-si" name="senales-reductores" value="si">
+                        <label for="senales-reductores-si">Sí</label>
+                        <input type="radio" id="senales-reductores-no" name="senales-reductores" value="no">
+                        <label for="senales-reductores-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="paradas-seguras">14.7 ¿Las paradas de ómnibus se encuentran ubicadas de forma segura (respetando la distancia reglamentaria) previo al cruce?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="paradas-seguras-si" name="paradas-seguras" value="si">
+                        <label for="paradas-seguras-si">Sí</label>
+                        <input type="radio" id="paradas-seguras-no" name="paradas-seguras" value="no">
+                        <label for="paradas-seguras-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="obstruccion-carteleria">14.8 ¿Se observa obstrucción de la cartelería?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="obstruccion-carteleria-si" name="obstruccion-carteleria" value="si">
+                        <label for="obstruccion-carteleria-si">Sí</label>
+                        <input type="radio" id="obstruccion-carteleria-no" name="obstruccion-carteleria" value="no">
+                        <label for="obstruccion-carteleria-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="estado-carteleria">14.9 ¿Se encuentran en mal estado de conservación? (Ej. Despintadas, oxidadas, etc.)</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="estado-carteleria-si" name="estado-carteleria" value="si">
+                        <label for="estado-carteleria-si">Sí</label>
+                        <input type="radio" id="estado-carteleria-no" name="estado-carteleria" value="no">
+                        <label for="estado-carteleria-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="senales-transitorias">14.10 ¿Hay presencia de señalamiento transitorio en zonas en construcción?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="senales-transitorias-si" name="senales-transitorias" value="si">
+                        <label for="senales-transitorias-si">Sí</label>
+                        <input type="radio" id="senales-transitorias-no" name="senales-transitorias" value="no">
+                        <label for="senales-transitorias-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="ceda-el-paso">14.11 ¿Se encuentran instaladas correctamente las señales “Ceda el paso” o “Pare”?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="ceda-el-paso-si" name="ceda-el-paso" value="si">
+                        <label for="ceda-el-paso-si">Sí</label>
+                        <input type="radio" id="ceda-el-paso-no" name="ceda-el-paso" value="no">
+                        <label for="ceda-el-paso-no">No</label>            
+                    </div>
+    
+    
+                </div>
+                <div class="form-group">
+                    <label for="cruces-peatonales">14.12 ¿Existen cruces peatonales previo a una rotonda?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="cruces-peatonales-si" name="cruces-peatonales" value="si">
+                        <label for="cruces-peatonales-si">Sí</label>
+                        <input type="radio" id="cruces-peatonales-no" name="cruces-peatonales" value="no">
+                        <label for="cruces-peatonales-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="senalizacion-rotonda">14.13 ¿Las rotondas se encuentran señalizadas?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="senalizacion-rotonda-si" name="senalizacion-rotonda" value="si">
+                        <label for="senalizacion-rotonda-si">Sí</label>
+                        <input type="radio" id="senalizacion-rotonda-no" name="senalizacion-rotonda" value="no">
+                        <label for="senalizacion-rotonda-no">No</label>
+                    </div>
+    
+                </div>
+    
+                <header><h4>Señalización lumínica</h4></header>
+                <div class="form-group">
+                    <label for="semaforos-vehiculares">15.1 ¿Existen semáforos vehiculares?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="semaforos-vehiculares-si" name="semaforos-vehiculares" value="si">
+                        <label for="semaforos-vehiculares-si">Sí</label>
+                        <input type="radio" id="semaforos-vehiculares-no" name="semaforos-vehiculares" value="no">
+                        <label for="semaforos-vehiculares-no">No</label>
+                    </div>
+    
+                </div>
+                <div class="form-group">
+                    <label for="semaforos-peatonales">15.2 ¿Existen semáforos peatonales?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="semaforos-peatonales-si" name="semaforos-peatonales" value="si">
+                        <label for="semaforos-peatonales-si">Sí</label>
+                        <input type="radio" id="semaforos-peatonales-no" name="semaforos-peatonales" value="no">
+                        <label for="semaforos-peatonales-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="semaforos-ciclistas">15.3 ¿Existen semáforos para ciclistas?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="semaforos-ciclistas-si" name="semaforos-ciclistas" value="si">
+                        <label for="semaforos-ciclistas-si">Sí</label>
+                        <input type="radio" id="semaforos-ciclistas-no" name="semaforos-ciclistas" value="no">
+                        <label for="semaforos-ciclistas-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="semaforos-funcionamiento">15.4 ¿Funcionan dichos dispositivos?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="semaforos-funcionamiento-si" name="semaforos-funcionamiento" value="si">
+                        <label for="semaforos-funcionamiento-si">Sí</label>
+                        <input type="radio" id="semaforos-funcionamiento-no" name="semaforos-funcionamiento" value="no">
+                        <label for="semaforos-funcionamiento-no">No</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="estado-semaforos">15.5 ¿El estado de conservación de los semáforos es deficiente?</label><br>
+                    <div class="form-group-inline">
+                        <input type="radio" id="estado-semaforos-si" name="estado-semaforos" value="si">
+                        <label for="estado-semaforos-si">Sí</label>
+                        <input type="radio" id="estado-semaforos-no" name="estado-semaforos" value="no">
+                        <label for="estado-semaforos-no">No</label>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="prev-button">Anterior</button>
+            <button type="submit">Enviar</button>
+        </form>
     </div>
 
-    <div class="form-section">
-        <div class="form-group">
-            <label for="veredas-optimas">5 ¿Las veredas se encuentran en estado óptimo para transitar?</label><br>
-            <input type="radio" id="veredas-optimas-si" name="veredas-optimas" value="si">
-            <label for="veredas-optimas-si">Sí</label>
-            <input type="radio" id="veredas-optimas-no" name="veredas-optimas" value="no">
-            <label for="veredas-optimas-no">No</label>
-        </div>
-    </div>
+    <script>
+        const paso1 = document.getElementById('paso-1');
+        const paso2 = document.getElementById('paso-2');
+        const nextButton = document.getElementById('next-button');
+        const prevButton = document.getElementById('prev-button');
+        const progresoTexto = document.getElementById('progreso-texto');
 
-    <div class="form-section">
-        <div class="form-group">
-            <label for="carril-omnibuses">6 ¿Existe carril exclusivo para ómnibus de transporte de pasajeros?</label><br>
-            <input type="radio" id="carril-omnibuses-si" name="carril-omnibuses" value="si">
-            <label for="carril-omnibuses-si">Sí</label>
-            <input type="radio" id="carril-omnibuses-no" name="carril-omnibuses" value="no">
-            <label for="carril-omnibuses-no">No</label>
-        </div>
-    </div>
+        nextButton.addEventListener('click', () => {
+            paso1.style.display = 'none';
+            paso2.style.display = 'block';
+            progresoTexto.textContent = '2 de 2';
+        });
 
-    <div class="form-section">
-        <div class="form-group">
-            <label for="senalizacion-paradas">7 ¿Existe señalización de paradas establecidas para ómnibus?</label><br>
-            <input type="radio" id="senalizacion-paradas-si" name="senalizacion-paradas" value="si">
-            <label for="senalizacion-paradas-si">Sí</label>
-            <input type="radio" id="senalizacion-paradas-no" name="senalizacion-paradas" value="no">
-            <label for="senalizacion-paradas-no">No</label>
-        </div>
-    </div>
+        prevButton.addEventListener('click', () => {
+            paso2.style.display = 'none';
+            paso1.style.display = 'block';
+            progresoTexto.textContent = '1 de 2';
+        });
+    </script>
 
-    <div class="form-section">
-        <h3>Señalamiento horizontal en calles y avenidas:</h3>
-        <div class="form-group">
-            <label for="demarcacion-separacion-carriles">8.1 ¿Existe demarcación horizontal respecto a la separación de carriles?</label><br>
-            <input type="radio" id="demarcacion-separacion-carriles-si" name="demarcacion-separacion-carriles" value="si">
-            <label for="demarcacion-separacion-carriles-si">Sí</label>
-            <input type="radio" id="demarcacion-separacion-carriles-no" name="demarcacion-separacion-carriles" value="no">
-            <label for="demarcacion-separacion-carriles-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="demarcacion-doble-sentido">8.2 ¿Existe demarcación horizontal en vías con doble sentido de circulación?</label><br>
-            <input type="radio" id="demarcacion-doble-sentido-si" name="demarcacion-doble-sentido" value="si">
-            <label for="demarcacion-doble-sentido-si">Sí</label>
-            <input type="radio" id="demarcacion-doble-sentido-no" name="demarcacion-doble-sentido" value="no">
-            <label for="demarcacion-doble-sentido-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="demarcacion-visible">8.3 ¿Son visibles en toda circunstancia (de día y de noche)?</label><br>
-            <input type="radio" id="demarcacion-visible-si" name="demarcacion-visible" value="si">
-            <label for="demarcacion-visible-si">Sí</label>
-            <input type="radio" id="demarcacion-visible-no" name="demarcacion-visible" value="no">
-            <label for="demarcacion-visible-no">No</label>
-        </div>
-    </div>
-
-    <div class="form-section">
-        <h3>Señalamiento vertical en calles y avenidas:</h3>
-        <div class="form-group">
-            <label for="seniales-advertencia">9.1 ¿Existen señales verticales preventivas o de advertencia?</label><br>
-            <input type="radio" id="seniales-advertencia-si" name="seniales-advertencia" value="si">
-            <label for="seniales-advertencia-si">Sí</label>
-            <input type="radio" id="seniales-advertencia-no" name="seniales-advertencia" value="no">
-            <label for="seniales-advertencia-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="seniales-reglamentarias">9.2 ¿Existen señales verticales reglamentarias o prescriptivas?</label><br>
-            <input type="radio" id="seniales-reglamentarias-si" name="seniales-reglamentarias" value="si">
-            <label for="seniales-reglamentarias-si">Sí</label>
-            <input type="radio" id="seniales-reglamentarias-no" name="seniales-reglamentarias" value="no">
-            <label for="seniales-reglamentarias-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="seniales-maximo">9.3 ¿Existen señales verticales de máximo peligro?</label><br>
-            <input type="radio" id="seniales-maximo-si" name="seniales-maximo" value="si">
-            <label for="seniales-maximo-si">Sí</label>
-            <input type="radio" id="seniales-maximo-no" name="seniales-maximo" value="no">
-            <label for="seniales-maximo-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="seniales-informativas">9.4 ¿Existen señales informativas?</label><br>
-            <input type="radio" id="seniales-informativas-si" name="seniales-informativas" value="si">
-            <label for="seniales-informativas-si">Sí</label>
-            <input type="radio" id="seniales-informativas-no" name="seniales-informativas" value="no">
-            <label for="seniales-informativas-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="seniales-nomencladas">9.5 ¿Las vías se encuentran señalizadas con sus respectivos nombres y altura catastral? (Nomencladores)</label><br>
-            <input type="radio" id="seniales-nomencladas-si" name="seniales-nomencladas" value="si">
-            <label for="seniales-nomencladas-si">Sí</label>
-            <input type="radio" id="seniales-nomencladas-no" name="seniales-nomencladas" value="no">
-            <label for="seniales-nomencladas-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="seniales-obstaculizadas">9.6 ¿Se encuentran obstaculizadas por condiciones climáticas o vegetación?</label><br>
-            <input type="radio" id="seniales-obstaculizadas-si" name="seniales-obstaculizadas" value="si">
-            <label for="seniales-obstaculizadas-si">Sí</label>
-            <input type="radio" id="seniales-obstaculizadas-no" name="seniales-obstaculizadas" value="no">
-            <label for="seniales-obstaculizadas-no">No</label>
-        </div>
-        <div class="form-group">
-            <label for="seniales-redundante">9.7 ¿La señalización es redundante, confusa o con mucha información?</label><br>
-            <input type="radio" id="seniales-redundante-si" name="seniales-redundante" value="si">
-            <label for="seniales-redundante-si">Sí</label>
-            <input type="radio" id="seniales-redundante-no" name="seniales-redundante" value="no">
-            <label for="seniales-redundante-no">No</label>
-        </div>
-    </div>
-
-    <footer>
-        <p>“FOOTER”</p>
-    </footer>
 </body>
 </html>

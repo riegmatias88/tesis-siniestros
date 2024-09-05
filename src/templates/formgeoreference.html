@@ -9,11 +9,11 @@
         document.addEventListener("DOMContentLoaded", function() {
             cargarProvincias();
         });
-    
+
         function volver() {
             window.history.back();
         }
-        
+    
         function cargarProvincias() {
             let provinciaSelect = document.getElementById("provincia");
     
@@ -29,7 +29,7 @@
                         provinciaSelect.add(option);
                     });
                 })
-                .catch(error => console.error('Error al buscar provincias:', error));
+                .catch(error => console.error('Error fetching provincias:', error));
         }
     
         function cargarDepartamentos() {
@@ -59,7 +59,7 @@
                             departamentoSelect.add(option);
                         });
                     })
-                    .catch(error => console.error('Error al buscar departamentos:', error));
+                    .catch(error => console.error('Error fetching departamentos:', error));
             }
         }
     
@@ -96,13 +96,12 @@
             }
         }
 
-    
-        async function generarHeatmap() {
+        async function generarGeoreference() {
             let form = document.getElementById("mapForm");
             let provincia = form.provincia.value;
             let departamento = form.departamento.value;
             let localidad = form.localidad.value;
-            const response = await fetch('/run_heatmap', {
+            const response = await fetch('/run_georeference', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -116,14 +115,13 @@
             }
         }
     </script>
-    
 </head>
 <body>
     <header>
-        <h1>Generar mapa de calor</h1>
+        <h1>Georreferenciar siniestros viales</h1>
     </header>
     <main>
-        <form id="mapForm" onsubmit="event.preventDefault(); generarHeatmap();">
+        <form id="mapForm" onsubmit="event.preventDefault(); generarGeoreference();">
             <label for="provincia">Provincia:</label>
             <select id="provincia" name="provincia" onchange="cargarDepartamentos()" required>
                 <option value="">Selecciona una provincia</option>

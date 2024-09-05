@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generar Mapa de Calor</title>
+    <title>Recomendacion</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -13,7 +13,7 @@
         function volver() {
             window.history.back();
         }
-        
+
         function cargarProvincias() {
             let provinciaSelect = document.getElementById("provincia");
     
@@ -29,7 +29,7 @@
                         provinciaSelect.add(option);
                     });
                 })
-                .catch(error => console.error('Error al buscar provincias:', error));
+                .catch(error => console.error('Error fetching provincias:', error));
         }
     
         function cargarDepartamentos() {
@@ -59,7 +59,7 @@
                             departamentoSelect.add(option);
                         });
                     })
-                    .catch(error => console.error('Error al buscar departamentos:', error));
+                    .catch(error => console.error('Error fetching departamentos:', error));
             }
         }
     
@@ -96,55 +96,113 @@
             }
         }
 
-    
-        async function generarHeatmap() {
-            let form = document.getElementById("mapForm");
-            let provincia = form.provincia.value;
-            let departamento = form.departamento.value;
-            let localidad = form.localidad.value;
-            const response = await fetch('/run_heatmap', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ provincia: provincia, departamento: departamento, localidad: localidad })
-            });
-            const data = await response.json();
-            alert(data.status);
-            if (data.file_url) {
-                window.open(data.file_url, '_blank');
-            }
+        function obtenerClusters() {
+            let provincia = document.getElementById('provincia').value;
+            let departamento = document.getElementById('departamento').value;
+            let localidad = document.getElementById('localidad').value;
+
+            fetch(`/get_clusters?provincia=${encodeURIComponent(provincia)}&departamento=${encodeURIComponent(departamento)}&localidad=${encodeURIComponent(localidad)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        alert(data.error);
+                        return;
+                    }
+
+                    // Limpiar las opciones anteriores
+                    let clustersListbox = document.getElementById('clusters-listbox');
+                    clustersListbox.innerHTML = '';
+
+                    // Llenar el listbox con los clústeres obtenidos
+                    data.forEach(cluster => {
+                        let option = document.createElement('option');
+                        option.value = cluster.cluster_id;
+                        option.textContent = `Zona ${cluster.cluster_id}: ${cluster.count} siniestros`;
+                        clustersListbox.appendChild(option);
+                    });
+
+                    // Mostrar el listbox de clústeres
+                    document.getElementById('cluster-selection').style.display = 'block';
+                })
+                .catch(error => {
+                    console.error('Error al obtener los clústeres:', error);
+                    alert('Error al obtener los clústeres.');
+                });
         }
+
+        function seleccionarCluster() {
+            let selectedOptions = Array.from(document.getElementById('clusters-listbox').selectedOptions);
+            let selectedClusters = selectedOptions.map(option => option.value);
+
+            // Aquí puedes manejar la lógica con los clústeres seleccionados
+            alert("Seleccionaste las Zonas: " + selectedClusters.join(", "));
+            // Puedes mostrar más detalles o realizar otras acciones con los clústeres seleccionados
+        }
+
+
+
+        function mostrarFormularioDetalle() {
+            // Esta función puede redirigir a otro formulario o mostrar más detalles
+            alert("Mostrando detalles del clúster " + document.getElementById('clusterId').value);
+            // Aquí puedes añadir lógica para redirigir a otro formulario o mostrar más información
+        }
+
     </script>
-    
 </head>
 <body>
     <header>
-        <h1>Generar mapa de calor</h1>
+        <h1>Recomendaciones</h1>
     </header>
     <main>
-        <form id="mapForm" onsubmit="event.preventDefault(); generarHeatmap();">
+        <form id="clusters" onsubmit="event.preventDefault(); obtenerClusters();">
             <label for="provincia">Provincia:</label>
             <select id="provincia" name="provincia" onchange="cargarDepartamentos()" required>
                 <option value="">Selecciona una provincia</option>
                 <!-- Las provincias se cargarán aquí dinámicamente -->
             </select>
             <br>
+
             <label for="departamento">Departamento:</label>
             <select id="departamento" name="departamento" onchange="cargarLocalidades()" required>
                 <option value="">Selecciona un departamento</option>
                 <!-- Los departamentos se cargarán aquí dinámicamente -->
             </select>
             <br>
+
             <label for="localidad">Localidad:</label>
             <select id="localidad" name="localidad" required>
                 <option value="">Selecciona una localidad</option>
                 <!-- Las localidades se cargarán aquí dinámicamente -->
             </select>
             <br>
-            <button type="submit">Generar Mapa</button>
+            <button type="submit">Obtener datos</button>
             <button type="button" onclick="volver()">Volver</button>
+
         </form>
+        <form id="cluster-selection" style="display:none;">
+                <h3>Zonas Disponibles</h3>
+                <label for="clusters-listbox">Selecciona una zona:</label>
+                <select id="clusters-listbox" size="5" multiple onchange="seleccionarCluster()">
+                    <!-- Las opciones se agregarán aquí dinámicamente -->
+                </select>
+        </form>
+
+        <form id="selected-cluster-details" style="display:none;">
+            <h3>Detalles de la Zona Seleccionada</h3>
+            <p id="cluster-info"></p>
+            <form id="detailForm" style="display:none;">
+                <!-- Aquí se pueden mostrar más detalles o campos adicionales del clúster seleccionado -->
+                <label for="clusterId">ID de la Zona:</label>
+                <input type="text" id="clusterId" name="clusterId" readonly><br><br>
+                
+                <label for="clusterCount">Cantidad de Siniestros:</label>
+                <input type="text" id="clusterCount" name="clusterCount" readonly><br><br>
+                
+                <button type="button" onclick="mostrarFormularioDetalle()">Ver más detalles</button>
+            </form>
+        </form>
+
+
     </main>
 </body>
 </html>
