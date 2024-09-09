@@ -90,3 +90,12 @@ class Database:
             return []  # Devuelve una lista vacía en caso de error
         finally:
             self.disconnect()
+
+    def execute_write_query(self, query, params):
+        try:
+            self.connect()
+            self.cursor.execute(query, params)
+            self.connection.commit()
+        finally:
+            self.disconnect()
+
