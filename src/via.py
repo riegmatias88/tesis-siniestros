@@ -29,6 +29,10 @@ class Via:
 
 #Métodos Via
 
+    def get_via(self):
+        query = "SELECT * FROM via"
+        return self.db.execute_select_query(query)
+
     def get_material(self, nombre, altura, ciudad):
         query = "SELECT via_material.descripcion FROM via INNER JOIN via_material ON (via.material=via_material.id) WHERE via.nombre = %s AND via.altura = %s AND via.ciudad = %s"
         result = self.db.execute_select_queries(query, (nombre, altura, ciudad))
@@ -37,7 +41,7 @@ class Via:
         else:
             return None
     
-    def set_via(self, nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, carril_omnibus, senalizacion_paradas, ciclovia, chicana, bandas_reductoras, reductor_velocidad, mini_rotonda, meseta_elevada, isleta_giro, demarcacion_separacion_carriles, demarcacion_doble_sentido, demarcacion_visible, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_calle_nomenclada, senial_obstaculiza, senial_redundante, vias_distinta_superficie, interseccion_multiple, visualizacion_cruce, obstruccion_visual, peatones_visibles, iluminacion_obstaculizada, reductores_velocidad_cruce, badenes_canaletas, objetos_rigidos, sendas_peatonales, lineas_pare, cordones_pintados, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, paradas_seguras, obstruccion_carteleria, estado_carteleria, senial_transitoria, ceda_el_paso, cruces_peatonales_rot, senalizacion_rotonda, semaforo_vehicular, semaforo_peatonal, semaforo_ciclistas, localidad_id):
+    def set_via_pavimento(self, nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, carril_omnibus, senalizacion_paradas, ciclovia, chicana, bandas_reductoras, reductor_velocidad, mini_rotonda, meseta_elevada, isleta_giro, demarcacion_separacion_carriles, demarcacion_doble_sentido, demarcacion_visible, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_calle_nomenclada, senial_obstaculiza, senial_redundante, vias_distinta_superficie, interseccion_multiple, visualizacion_cruce, obstruccion_visual, peatones_visibles, iluminacion_obstaculizada, reductores_velocidad_cruce, badenes_canaletas, objetos_rigidos, sendas_peatonales, lineas_pare, cordones_pintados, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, paradas_seguras, obstruccion_carteleria, estado_carteleria, senial_transitoria, ceda_el_paso, cruces_peatonales_rot, senalizacion_rotonda, semaforo_vehicular, semaforo_peatonal, semaforo_ciclistas, localidad_id):
         if nombre: self.nombre = nombre
         if altura: self.altura = altura
         if tipo: self.tipo = tipo
@@ -95,15 +99,67 @@ class Via:
         if semaforo_peatonal: self.semaforo_peatonal = semaforo_peatonal
         if semaforo_ciclistas: self.semaforo_ciclistas = semaforo_ciclistas
         if localidad_id: self.localidad_id = localidad_id
-
+        
+        print (material)
         query = """
             INSERT INTO via (nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, carril_omnibus, senalizacion_paradas, ciclovia, chicana, bandas_reductoras, reductor_velocidad, mini_rotonda, meseta_elevada, isleta_giro, demarcacion_separacion_carriles, demarcacion_doble_sentido, demarcacion_visible, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_calle_nomenclada, senial_obstaculiza, senial_redundante, vias_distinta_superficie, interseccion_multiple, visualizacion_cruce, obstruccion_visual, peatones_visibles, iluminacion_obstaculizada, reductores_velocidad_cruce, badenes_canaletas, objetos_rigidos, sendas_peatonales, lineas_pare, cordones_pintados, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, paradas_seguras, obstruccion_carteleria, estado_carteleria, senial_transitoria, ceda_el_paso, cruces_peatonales_rot, senalizacion_rotonda, semaforo_vehicular, semaforo_peatonal, semaforo_ciclistas, localidad_id) 
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         try:
-            #self.db.execute_write_query(query, (nombre, altura, tipo, material, estado, localidad_id))
             self.db.execute_write_query(query, (nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, carril_omnibus, senalizacion_paradas, ciclovia, chicana, bandas_reductoras, reductor_velocidad, mini_rotonda, meseta_elevada, isleta_giro, demarcacion_separacion_carriles, demarcacion_doble_sentido, demarcacion_visible, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_calle_nomenclada, senial_obstaculiza, senial_redundante, vias_distinta_superficie, interseccion_multiple, visualizacion_cruce, obstruccion_visual, peatones_visibles, iluminacion_obstaculizada, reductores_velocidad_cruce, badenes_canaletas, objetos_rigidos, sendas_peatonales, lineas_pare, cordones_pintados, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, paradas_seguras, obstruccion_carteleria, estado_carteleria, senial_transitoria, ceda_el_paso, cruces_peatonales_rot, senalizacion_rotonda, semaforo_vehicular, semaforo_peatonal, semaforo_ciclistas, localidad_id))
+        except Exception as e:
+            print(f"Error al actualizar la tabla: {e}") 
+        
+    def get_via_data(self):
+        query = "SELECT * FROM via"
+        return self.db.execute_select_queries(query)
 
+    def set_via_tierra(self, nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_obstaculiza, estado_carteleria, senial_transitoria, vias_distinta_superficie, obstruccion_visual, reductores_velocidad_cruce, objetos_rigidos, paradas_seguras, peatones_visibles, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, senial_calle_nomenclada, polvo, zanjas, zanjas_contencion, localidad_id):
+        if nombre: self.nombre = nombre
+        if altura: self.altura = altura
+        if tipo: self.tipo = tipo
+        if material: self.material = material
+        if estado: self.estado = estado
+        if limpieza: self.limpieza = limpieza
+        if luminaria: self.iluminacion = luminaria
+        if iluminacion_uniforme: self.iluminacion_uniforme = iluminacion_uniforme
+        if veredas_optimas: self.veredas_optimas = veredas_optimas
+        if senial_advertencia: self.senial_advertencia= senial_advertencia
+        if senial_reglamentaria: self.senial_reglamentaria= senial_reglamentaria
+        if senial_maximo: self.senial_maximo= senial_maximo
+        if senial_informativa : self.senial_informativa = senial_informativa 
+        if senial_calle_nomenclada : self.senial_calle_nomenclada = senial_calle_nomenclada 
+        if senial_obstaculiza: self.senial_obstaculiza= senial_obstaculiza
+        if vias_distinta_superficie: self.vias_distinta_superficie = vias_distinta_superficie
+        if obstruccion_visual: self.obstruccion_visual = obstruccion_visual
+        if peatones_visibles: self.peatones_visibles = peatones_visibles
+        if reductores_velocidad_cruce: self.reductores_velocidad_cruce = reductores_velocidad_cruce
+        if objetos_rigidos: self.objetos_rigidos = objetos_rigidos
+        if senial_cruce_peatones: self.senial_cruce_peatones = senial_cruce_peatones
+        if limitacion_velocidad: self.limitacion_velocidad = limitacion_velocidad
+        if senial_pare: self.senial_pare = senial_pare
+        if senial_cruce: self.senial_cruce = senial_cruce
+        if senial_ciclovia: self.senial_ciclovia = senial_ciclovia
+        if senial_reductores: self.senial_reductores = senial_reductores
+        if paradas_seguras: self.paradas_seguras = paradas_seguras
+        if estado_carteleria: self.estado_carteleria = estado_carteleria
+        if senial_transitoria: self.senial_transitoria = senial_transitoria
+        if polvo: self.polvo = polvo
+        if zanjas: self.zanjas = zanjas
+        if zanjas_contencion: self.zanjas_contencion = zanjas_contencion
+        if localidad_id: self.localidad_id = localidad_id
+
+        
+        print (material)
+        query = """
+            INSERT INTO via (nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_obstaculiza, estado_carteleria, senial_transitoria, vias_distinta_superficie, obstruccion_visual, reductores_velocidad_cruce, objetos_rigidos, paradas_seguras, peatones_visibles, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, senial_calle_nomenclada, polvo, zanjas, zanjas_contencion, localidad_id) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+
+        try:
+            self.db.execute_write_query(query, (nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_obstaculiza, estado_carteleria, senial_transitoria, vias_distinta_superficie, obstruccion_visual, reductores_velocidad_cruce, objetos_rigidos, paradas_seguras, peatones_visibles, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, senial_calle_nomenclada, polvo, zanjas, zanjas_contencion, localidad_id))
+        
+                
         except Exception as e:
             print(f"Error al actualizar la tabla: {e}") 
         
