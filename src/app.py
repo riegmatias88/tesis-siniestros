@@ -1,4 +1,6 @@
 from flask import Flask, render_template, request, jsonify, url_for, session
+#from requests import post
+from durable.lang import post
 from database import Database
 from clima import Clima
 from heatmap import run_heatmap
@@ -7,6 +9,7 @@ from clustering_perimetro import run_clustering_zonas
 from get_recomendation import get_clusters
 from via import Via
 from localidad import Localidad
+from rules import load_rules, run_assert_facts
 import logging
 import os
 
@@ -21,6 +24,7 @@ localidad = Localidad(db)
 
 # Configurar el registro de depuración
 logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 @app.route('/')
 def index():
@@ -200,9 +204,11 @@ def load_form_data():
     semaforo_vehicular = request.form.get('semaforo-vehicular')
     semaforo_peatonal = request.form.get('semaforo-peatonal')
     semaforo_ciclistas = request.form.get('semaforo-ciclistas')
-    # Continua capturando el resto de los datos del formulario...
+    polvo = request.form.get('polvo')
+    zanjas = request.form.get('zanjas')
+    zanjas_contencion = request.form.get('zanjas_contencion')
 
-    localidad_id = 1
+    localidad_id = 1 # queda pendiente buscar localidad_id
 
     #muestro todos los valores capturados en el form
     print(request.form)
@@ -210,12 +216,15 @@ def load_form_data():
     if not nombre or not altura or not tipo or not material or not estado:
         return "Faltan especificar campos", 400
     
-    # Ejemplo de un query INSERT usando los datos capturados
-    via.set_via(nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, carril_omnibus, senalizacion_paradas, ciclovia, chicana, bandas_reductoras, reductor_velocidad, mini_rotonda, meseta_elevada, isleta_giro, demarcacion_separacion_carriles, demarcacion_doble_sentido, demarcacion_visible, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_calle_nomenclada, senial_obstaculiza, senial_redundante, vias_distinta_superficie, interseccion_multiple, visualizacion_cruce, obstruccion_visual, peatones_visibles, iluminacion_obstaculizada, reductores_velocidad_cruce, badenes_canaletas, objetos_rigidos, sendas_peatonales, lineas_pare, cordones_pintados, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, paradas_seguras, obstruccion_carteleria, estado_carteleria, senial_transitoria, ceda_el_paso, cruces_peatonales_rot, senalizacion_rotonda, semaforo_vehicular, semaforo_peatonal, semaforo_ciclistas, localidad_id) # agregar manejo de exceptions
-
-    return jsonify(status="Registro cargado")
- 
-
+    if material == "4" or material == "5": 
+        print("Ejecuto set_via para vias de tierra o ripio")
+        via.set_via_tierra(nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_obstaculiza, estado_carteleria, senial_transitoria, vias_distinta_superficie, obstruccion_visual, reductores_velocidad_cruce, objetos_rigidos, paradas_seguras, peatones_visibles, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, senial_calle_nomenclada, polvo, zanjas, zanjas_contencion, localidad_id)
+        return jsonify(status="Calle tierra cargada ")
+    else:
+        print("Ejecuto set_via para vias pavimentadas")
+        via.set_via_pavimento(nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, carril_omnibus, senalizacion_paradas, ciclovia, chicana, bandas_reductoras, reductor_velocidad, mini_rotonda, meseta_elevada, isleta_giro, demarcacion_separacion_carriles, demarcacion_doble_sentido, demarcacion_visible, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_calle_nomenclada, senial_obstaculiza, senial_redundante, vias_distinta_superficie, interseccion_multiple, visualizacion_cruce, obstruccion_visual, peatones_visibles, iluminacion_obstaculizada, reductores_velocidad_cruce, badenes_canaletas, objetos_rigidos, sendas_peatonales, lineas_pare, cordones_pintados, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, paradas_seguras, obstruccion_carteleria, estado_carteleria, senial_transitoria, ceda_el_paso, cruces_peatonales_rot, senalizacion_rotonda, semaforo_vehicular, semaforo_peatonal, semaforo_ciclistas, localidad_id) # agregar manejo de exceptions
+        return jsonify(status="Registro cargado")
+    
 ### Recomendacion
 
 @app.route('/formrecomendacion')
@@ -240,6 +249,82 @@ def get_clusters_route():
         return jsonify(cluster_data)  # Retorna los clústeres como JSON
     else:
         return jsonify({"error": "No se encontraron clústeres"}), 404
+
+
+
+# Cargar las reglas
+load_rules()
+
+# Ruta en Flask para enviar parámetros y activar reglas
+@app.route('/advice', methods=['POST'])
+def advice_rule():
+
+    data = request.get_json()  # Obtener los datos enviados en el body de la petición
+    
+    # Verificar si existen los campos 'Vehiculo', 'Via', 'Siniestro'
+    vehiculo_data = data.get('Vehiculo', {})
+    via_data = data.get('Via', {})
+    siniestro_data = data.get('Siniestro', {})
+    clima_data = data.get('Clima', {})
+
+    # Preparar los datos para el motor de reglas, solo si existen
+    post_data = {}
+
+    if vehiculo_data:
+        post_data['Vehiculo'] = {
+            'Tipo': vehiculo_data.get('Tipo') if vehiculo_data.get('Tipo') is not None else ''
+        }
+
+    if siniestro_data:
+        post_data['Siniestro'] = {
+            'Flujo_de_transito': siniestro_data.get('Flujo_de_transito') if siniestro_data.get('Flujo_de_transito') is not None else '',
+            'Obstaculizacion1': siniestro_data.get('Obstaculizacion1') if siniestro_data.get('Obstaculizacion1') is not None else '',
+            'Obstaculizacion2': siniestro_data.get('Obstaculizacion2') if siniestro_data.get('Obstaculizacion2') is not None else '',
+            'Obstaculizacion3': siniestro_data.get('Obstaculizacion3') if siniestro_data.get('Obstaculizacion3') is not None else '',
+            'Detalle_siniestro_via': siniestro_data.get('Detalle_siniestro_via') if siniestro_data.get('Detalle_siniestro_via') is not None else '',
+            'Ubicacion_siniestro_via': siniestro_data.get('Ubicacion_siniestro_via') if siniestro_data.get('Ubicacion_siniestro_via') is not None else '',
+            'Tipo': siniestro_data.get('Tipo') if siniestro_data.get('Tipo') is not None else '',
+            'Zona': siniestro_data.get('Zona') if siniestro_data.get('Zona') is not None else '',
+            'Franja_horaria': siniestro_data.get('Franja_horaria') if siniestro_data.get('Franja_horaria') is not None else ''
+        }
+
+    if via_data:
+        post_data['Via'] = {
+            'Ciclovia': via_data.get('Ciclovia') if via_data.get('Ciclovia') is not None else 'no',
+            'Cruce_peatonal': via_data.get('Cruce_peatonal') if via_data.get('Cruce_peatonal') is not None else 'no',
+            'Semaforo_peatonal': via_data.get('Semaforo_peatonal') if via_data.get('Semaforo_peatonal') is not None else 'no',
+            'Reductor_velocidad': via_data.get('Reductor_velocidad') if via_data.get('Reductor_velocidad') is not None else 'no',
+            'Senializacion_vertical': via_data.get('Senializacion_vertical') if via_data.get('Senializacion_vertical') is not None else 'no',
+            'Senializacion_horizontal': via_data.get('Senializacion_horizontal') if via_data.get('Senializacion_horizontal') is not None else 'no',
+            'Senializacion_temporal': via_data.get('Senializacion_temporal') if via_data.get('Senializacion_temporal') is not None else 'no',
+            'Ferrovia': via_data.get('Ferrovia') if via_data.get('Ferrovia') is not None else 'no',
+            'Esquina_cordon_amarillo': via_data.get('Esquina_cordon_amarillo') if via_data.get('Esquina_cordon_amarillo') is not None else 'no',
+            'Semaforo_vehicular': via_data.get('Semaforo_vehicular') if via_data.get('Semaforo_vehicular') is not None else 'no',
+            'Visibilidad': via_data.get('Visibilidad') if via_data.get('Visibilidad') is not None else '',
+            'Limpieza': via_data.get('Limpieza') if via_data.get('Limpieza') is not None else '',
+            'Tipo': via_data.get('Tipo') if via_data.get('Tipo') is not None else '',
+            'Material': via_data.get('Material') if via_data.get('Material') is not None else '',
+            'Cuneta': via_data.get('Cuneta') if via_data.get('Cuneta') is not None else '',
+            'Estado': via_data.get('Estado') if via_data.get('Estado') is not None else '',
+            'Zona': via_data.get('Zona') if via_data.get('Zona') is not None else ''
+        }
+
+    if clima_data:
+        post_data['Clima'] = {
+            'Visibilidad': clima_data.get('Visibilidad') if clima_data.get('Visibilidad') is not None else '',
+            'Precipitaciones': clima_data.get('Precipitaciones') if clima_data.get('Precipitaciones') is not None else '',
+            'Viento': clima_data.get('Viento') if clima_data.get('Viento') is not None else '',
+            'Temperatura': clima_data.get('Temperatura') if clima_data.get('Temperatura') is not None else ''            
+        }
+
+    # Enviar los datos al motor de reglas
+    try:
+        print(post_data)
+        run_assert_facts(post_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+    return jsonify({"message": "Reglas evaluadas correctamente"})
 
 ### Logout
 
