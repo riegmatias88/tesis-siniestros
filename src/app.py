@@ -9,7 +9,10 @@ from clustering_perimetro import run_clustering_zonas
 from get_recomendation import get_clusters
 from via import Via
 from localidad import Localidad
+from siniestro import Siniestro
+from recomendacion import Recomendacion
 from rules import load_rules, run_assert_facts
+from datetime import datetime
 import logging
 import os
 
@@ -21,6 +24,8 @@ db = Database()
 clima = Clima(db)
 via = Via(db)
 localidad = Localidad(db)
+siniestro = Siniestro(db)
+recomendacion = Recomendacion(db)
 
 # Configurar el registro de depuración
 logging.basicConfig(level=logging.DEBUG)
@@ -29,6 +34,15 @@ logger = logging.getLogger(__name__)
 @app.route('/')
 def index():
     return render_template('index.html')
+
+@app.route('/modal')
+def mostrar_modal():
+    return render_template('modal.html')
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return render_template('logout.html')
 
 @app.route('/get_clima', methods=['POST'])
 def get_clima():
@@ -145,11 +159,17 @@ def forminsitu2():
     session.clear()
     return render_template('forminsitu2.html')
 
+#######################################################################################
+#                              Endpoint load_form_data
+#######################################################################################
+
 @app.route('/load_form_data', methods=['POST'])
 def load_form_data():
     # Capturar los datos del formulario
     nombre = request.form.get('nombrevia')
     altura = request.form.get('alturavia')
+    entre_calle1 = request.form.get('entrecalle1')
+    entre_calle2 = request.form.get('entrecalle2')
     tipo = request.form.get('tipovia')
     material = request.form.get('materialvia')
     estado = request.form.get('estadovia')
@@ -218,11 +238,11 @@ def load_form_data():
     
     if material == "4" or material == "5": 
         print("Ejecuto set_via para vias de tierra o ripio")
-        via.set_via_tierra(nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_obstaculiza, estado_carteleria, senial_transitoria, vias_distinta_superficie, obstruccion_visual, reductores_velocidad_cruce, objetos_rigidos, paradas_seguras, peatones_visibles, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, senial_calle_nomenclada, polvo, zanjas, zanjas_contencion, localidad_id)
+        via.set_via_tierra(nombre, altura, entre_calle1, entre_calle2, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_obstaculiza, estado_carteleria, senial_transitoria, vias_distinta_superficie, obstruccion_visual, reductores_velocidad_cruce, objetos_rigidos, paradas_seguras, peatones_visibles, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, senial_calle_nomenclada, polvo, zanjas, zanjas_contencion, localidad_id)
         return jsonify(status="Calle tierra cargada ")
     else:
         print("Ejecuto set_via para vias pavimentadas")
-        via.set_via_pavimento(nombre, altura, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, carril_omnibus, senalizacion_paradas, ciclovia, chicana, bandas_reductoras, reductor_velocidad, mini_rotonda, meseta_elevada, isleta_giro, demarcacion_separacion_carriles, demarcacion_doble_sentido, demarcacion_visible, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_calle_nomenclada, senial_obstaculiza, senial_redundante, vias_distinta_superficie, interseccion_multiple, visualizacion_cruce, obstruccion_visual, peatones_visibles, iluminacion_obstaculizada, reductores_velocidad_cruce, badenes_canaletas, objetos_rigidos, sendas_peatonales, lineas_pare, cordones_pintados, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, paradas_seguras, obstruccion_carteleria, estado_carteleria, senial_transitoria, ceda_el_paso, cruces_peatonales_rot, senalizacion_rotonda, semaforo_vehicular, semaforo_peatonal, semaforo_ciclistas, localidad_id) # agregar manejo de exceptions
+        via.set_via_pavimento(nombre, altura, entre_calle1, entre_calle2, tipo, material, estado, limpieza, luminaria, iluminacion_uniforme, veredas_optimas, carril_omnibus, senalizacion_paradas, ciclovia, chicana, bandas_reductoras, reductor_velocidad, mini_rotonda, meseta_elevada, isleta_giro, demarcacion_separacion_carriles, demarcacion_doble_sentido, demarcacion_visible, senial_advertencia, senial_reglamentaria, senial_maximo, senial_informativa, senial_calle_nomenclada, senial_obstaculiza, senial_redundante, vias_distinta_superficie, interseccion_multiple, visualizacion_cruce, obstruccion_visual, peatones_visibles, iluminacion_obstaculizada, reductores_velocidad_cruce, badenes_canaletas, objetos_rigidos, sendas_peatonales, lineas_pare, cordones_pintados, senial_cruce_peatones, limitacion_velocidad, senial_pare, senial_cruce, senial_ciclovia, senial_reductores, paradas_seguras, obstruccion_carteleria, estado_carteleria, senial_transitoria, ceda_el_paso, cruces_peatonales_rot, senalizacion_rotonda, semaforo_vehicular, semaforo_peatonal, semaforo_ciclistas, localidad_id) # agregar manejo de exceptions
         return jsonify(status="Registro cargado")
     
 ### Recomendacion
@@ -242,7 +262,8 @@ def get_clusters_route():
         return jsonify({"error": "Faltan parámetros: provincia, departamento, localidad"}), 400
 
     # Llama a la función get_clusters con los parámetros recibidos
-    cluster_data = get_clusters(provincia, departamento, localidad)
+    #cluster_data = get_clusters(provincia, departamento, localidad)
+    cluster_data = get_siniestros(provincia, departamento, localidad)
     print(cluster_data)
 
     if cluster_data:
@@ -250,88 +271,237 @@ def get_clusters_route():
     else:
         return jsonify({"error": "No se encontraron clústeres"}), 404
 
+#######################################################################################
+#                              Endpoint get_siniestros
+#######################################################################################
+
+@app.route('/get_siniestros')
+def get_siniestros():
+    provincia = request.args.get('provincia')
+    departamento = request.args.get('departamento')
+    localidad = request.args.get('localidad')
+
+    if not provincia or not departamento or not localidad:
+        return jsonify({"error": "Faltan parámetros: provincia, departamento o localidad"}), 400
+    
+    try:
+        siniestro_tupla = siniestro.get_siniestro_by_ubicacion(provincia,departamento,localidad)
+        siniestro_data = [
+                {
+                    "Id": siniestro[0],
+                    "Fecha": str(siniestro[1]),
+                    "Hora": str(siniestro[2]),
+                    "Tipo": siniestro[3],
+                    "Categoria": siniestro[4],
+                    "Calle": siniestro[5],
+                    "Altura": siniestro[6],
+                    "Entre_calle1": siniestro[7],
+                    "Entre_calle2": siniestro[8]
+                } 
+                for siniestro in siniestro_tupla
+            ]
+        print(siniestro_data)
+        return jsonify({"siniestros": siniestro_data}),200
+    
+    except Exception as e:
+        return jsonify({"error": f"Error al obtener siniestros: {str(e)}"}), 500
 
 
 # Cargar las reglas
 load_rules()
 
+#######################################################################################
+#                              Endpoint advice
+#######################################################################################
+
 # Ruta en Flask para enviar parámetros y activar reglas
 @app.route('/advice', methods=['POST'])
 def advice_rule():
 
+    id_siniestro = 1 #este id luego tiene que venir en el POST
+    id_via = 1 #este id luego tiene que venir en el POST
+
     data = request.get_json()  # Obtener los datos enviados en el body de la petición
     
-    # Verificar si existen los campos 'Vehiculo', 'Via', 'Siniestro'
-    vehiculo_data = data.get('Vehiculo', {})
+    # Verificar si existen los campos 'Vehiculo', 'Via', 'Siniestro', 'Clima'
     via_data = data.get('Via', {})
     siniestro_data = data.get('Siniestro', {})
     clima_data = data.get('Clima', {})
 
+    #Busco los datos de siniestros en la base de datos
+    siniestro_data = siniestro.get_siniestro_by_id(id_siniestro)
+    siniestro_data = siniestro_data[0]
+
+    via_data = via.get_via_by_id(id_via)
+    via_data = via_data[0]
+
     # Preparar los datos para el motor de reglas, solo si existen
     post_data = {}
 
-    if vehiculo_data:
-        post_data['Vehiculo'] = {
-            'Tipo': vehiculo_data.get('Tipo') if vehiculo_data.get('Tipo') is not None else ''
-        }
-
     if siniestro_data:
         post_data['Siniestro'] = {
-            'Flujo_de_transito': siniestro_data.get('Flujo_de_transito') if siniestro_data.get('Flujo_de_transito') is not None else '',
-            'Obstaculizacion1': siniestro_data.get('Obstaculizacion1') if siniestro_data.get('Obstaculizacion1') is not None else '',
-            'Obstaculizacion2': siniestro_data.get('Obstaculizacion2') if siniestro_data.get('Obstaculizacion2') is not None else '',
-            'Obstaculizacion3': siniestro_data.get('Obstaculizacion3') if siniestro_data.get('Obstaculizacion3') is not None else '',
-            'Detalle_siniestro_via': siniestro_data.get('Detalle_siniestro_via') if siniestro_data.get('Detalle_siniestro_via') is not None else '',
-            'Ubicacion_siniestro_via': siniestro_data.get('Ubicacion_siniestro_via') if siniestro_data.get('Ubicacion_siniestro_via') is not None else '',
-            'Tipo': siniestro_data.get('Tipo') if siniestro_data.get('Tipo') is not None else '',
-            'Zona': siniestro_data.get('Zona') if siniestro_data.get('Zona') is not None else '',
-            'Franja_horaria': siniestro_data.get('Franja_horaria') if siniestro_data.get('Franja_horaria') is not None else ''
+            'Id': siniestro_data[0] if siniestro_data[0] is not None else '',
+            'Fecha': str(siniestro_data[1]) if siniestro_data[1] is not None else '',
+            'Hora': str(siniestro_data[2]) if siniestro_data[2] is not None else '',
+            'Franja_horaria': siniestro_data[3] if siniestro_data[3] is not None else '',
+            #'Latitud': float(siniestro_data[4]) if siniestro_data[4] is not None else '',
+            #'Longitud': float(siniestro_data[5]) if siniestro_data[5] is not None else '',
+            'Categoria': siniestro_data[6] if siniestro_data[6] is not None else '',
+            'Tipo': siniestro_data[7] if siniestro_data[7] is not None else '',
+            'Localidad_id': siniestro_data[8] if siniestro_data[8] is not None else '',
+            'Via_id': siniestro_data[9] if siniestro_data[9] is not None else '',
+            'Participante1': siniestro_data[10] if siniestro_data[10] is not None else '',
+            'Participante2': siniestro_data[11] if siniestro_data[11] is not None else '',
+            'Participante3': siniestro_data[12] if siniestro_data[12] is not None else '',
+            'Obstaculizacion1': siniestro_data[13] if siniestro_data[13] is not None else '',
+            'Obstaculizacion2': siniestro_data[14] if siniestro_data[14] is not None else '',
+            'Obstaculizacion3': siniestro_data[15] if siniestro_data[15] is not None else '',
+            'Flujo_transito': siniestro_data[16] if siniestro_data[16] is not None else '',
+            'Detalle_siniestro_via': siniestro_data[17] if siniestro_data[17] is not None else '',
+            'Ubicacion_siniestro_via': siniestro_data[18] if siniestro_data[18] is not None else '',
+            'Zona': siniestro_data[19] if siniestro_data[19] is not None else ''
         }
 
     if via_data:
         post_data['Via'] = {
-            'Ciclovia': via_data.get('Ciclovia') if via_data.get('Ciclovia') is not None else 'no',
-            'Cruce_peatonal': via_data.get('Cruce_peatonal') if via_data.get('Cruce_peatonal') is not None else 'no',
-            'Semaforo_peatonal': via_data.get('Semaforo_peatonal') if via_data.get('Semaforo_peatonal') is not None else 'no',
-            'Reductor_velocidad': via_data.get('Reductor_velocidad') if via_data.get('Reductor_velocidad') is not None else 'no',
-            'Senializacion_vertical': via_data.get('Senializacion_vertical') if via_data.get('Senializacion_vertical') is not None else 'no',
-            'Senializacion_horizontal': via_data.get('Senializacion_horizontal') if via_data.get('Senializacion_horizontal') is not None else 'no',
-            'Senializacion_temporal': via_data.get('Senializacion_temporal') if via_data.get('Senializacion_temporal') is not None else 'no',
-            'Ferrovia': via_data.get('Ferrovia') if via_data.get('Ferrovia') is not None else 'no',
-            'Esquina_cordon_amarillo': via_data.get('Esquina_cordon_amarillo') if via_data.get('Esquina_cordon_amarillo') is not None else 'no',
-            'Semaforo_vehicular': via_data.get('Semaforo_vehicular') if via_data.get('Semaforo_vehicular') is not None else 'no',
-            'Visibilidad': via_data.get('Visibilidad') if via_data.get('Visibilidad') is not None else '',
-            'Limpieza': via_data.get('Limpieza') if via_data.get('Limpieza') is not None else '',
-            'Tipo': via_data.get('Tipo') if via_data.get('Tipo') is not None else '',
-            'Material': via_data.get('Material') if via_data.get('Material') is not None else '',
-            'Cuneta': via_data.get('Cuneta') if via_data.get('Cuneta') is not None else '',
-            'Estado': via_data.get('Estado') if via_data.get('Estado') is not None else '',
-            'Zona': via_data.get('Zona') if via_data.get('Zona') is not None else ''
+            'Id': via_data[0] if via_data[0] is not None else '',
+            'Nombre': via_data[1] if via_data[1] is not None else '',
+            'Altura': via_data[2] if via_data[2] is not None else '',
+            'Entre_calle1': via_data[3] if via_data[3] is not None else '-',
+            'Entre_calle2': via_data[4] if via_data[4] is not None else '-',
+            'Tipo': via_data[5] if via_data[5] is not None else '',
+            'Material': via_data[6] if via_data[6] is not None else '',
+            'Estado': via_data[7] if via_data[7] is not None else '',
+            'Localidad_id': via_data[8] if via_data[8] is not None else '',
+            'Ciclovia': via_data[9] if via_data[9] is not None else '0',
+            'Semaforo_peatonal': via_data[10] if via_data[10] is not None else '0',
+            'Semaforo_vehicular': via_data[11] if via_data[11] is not None else '0',
+            'Semaforo_ciclistas': via_data[12] if via_data[12] is not None else '0',
+            'Chicana': via_data[13] if via_data[13] is not None else '0',
+            'Bandas_reductoras': via_data[14] if via_data[14] is not None else '0',
+            'Reductor_velocidad': via_data[15] if via_data[15] is not None else '0',
+            'Mini_rotonda': via_data[16] if via_data[16] is not None else '0',
+            'Meseta_elevada': via_data[17] if via_data[17] is not None else '0',
+            'Isleta_giro': via_data[18] if via_data[18] is not None else '0',
+            'Iuminaria': via_data[19] if via_data[19] is not None else '0',
+            'Limpieza': via_data[20] if via_data[20] is not None else '0',
+            'Iluminacion_uniforme': via_data[21] if via_data[21] is not None else '0',
+            'Veredas_optimas': via_data[22] if via_data[22] is not None else '0',
+            'Carril_omnibus': via_data[23] if via_data[23] is not None else '0',
+            'Senalizacion_paradas': via_data[24] if via_data[24] is not None else '0',
+            'Demarcacion_separacion_carriles': via_data[25] if via_data[25] is not None else '0',
+            'Demarcacion_doble_sentido': via_data[26] if via_data[26] is not None else '0',
+            'Demarcacion_visible': via_data[27] if via_data[27] is not None else '0',
+            'Senial_advertencia': via_data[28] if via_data[28] is not None else '0',
+            'Senial_reglamentaria': via_data[29] if via_data[29] is not None else '0',
+            'Senial_maximo': via_data[30] if via_data[30] is not None else '0',
+            'Senial_informativa': via_data[31] if via_data[31] is not None else '0',
+            'Senial_calle_nomenclada': via_data[32] if via_data[32] is not None else '0',
+            'Senial_obstaculiza': via_data[33] if via_data[33] is not None else '0',
+            'Senial_redundante': via_data[34] if via_data[34] is not None else '0',
+            'Vias_distinta_superficie': via_data[35] if via_data[35] is not None else '0',
+            'Interseccion_multiple': via_data[36] if via_data[36] is not None else '0',
+            'Visualizacion_cruce': via_data[37] if via_data[37] is not None else '0',
+            'Obstruccion_visual': via_data[38] if via_data[38] is not None else '0',
+            'Peatones_visibles': via_data[39] if via_data[39] is not None else '0',
+            'Iluminacion_obstaculizada': via_data[40] if via_data[40] is not None else '0',
+            'Reductores_velocidad_cruce': via_data[41] if via_data[41] is not None else '0',
+            'Badenes_canaletas': via_data[42] if via_data[42] is not None else '0',
+            'Objetos_rigidos': via_data[43] if via_data[43] is not None else '0',
+            'Sendas_peatonales': via_data[44] if via_data[44] is not None else '0',
+            'Lineas_pare': via_data[45] if via_data[45] is not None else '0',
+            'Cordones_pintados': via_data[46] if via_data[46] is not None else '0',
+            'Senial_cruce_peatones': via_data[47] if via_data[47] is not None else '0',
+            'Limitacion_velocidad': via_data[48] if via_data[48] is not None else '0',
+            'Senial_pare': via_data[49] if via_data[49] is not None else '0',
+            'Senial_cruce': via_data[50] if via_data[50] is not None else '0',
+            'Senial_ciclovia': via_data[51] if via_data[51] is not None else '0',
+            'Senial_reductores': via_data[52] if via_data[52] is not None else '0',
+            'Paradas_seguras': via_data[53] if via_data[53] is not None else '0',
+            'Obstruccion_carteleria': via_data[54] if via_data[54] is not None else '0',
+            'Estado_carteleria': via_data[55] if via_data[55] is not None else '0',
+            'Senial_transitoria': via_data[56] if via_data[56] is not None else '0',
+            'Ceda_el_paso': via_data[57] if via_data[57] is not None else '0',
+            'Cruces_peatonales_rot': via_data[58] if via_data[58] is not None else '0',
+            'Senalizacion_rotonda': via_data[59] if via_data[59] is not None else '0',
+            'Polvo': via_data[60] if via_data[60] is not None else '0',
+            'Zanjas': via_data[61] if via_data[61] is not None else '0',
+            'Zanjas_contencion': via_data[62] if via_data[62] is not None else '0'
         }
+
+    #Guardo los datos de fecha y hora para buscar los datos del clima
+    fecha=siniestro_data[1]
+    hora=siniestro_data[2]
+
+    clima_data = clima.get_clima(fecha,hora)
+    clima_data = clima_data[0]
 
     if clima_data:
         post_data['Clima'] = {
-            'Visibilidad': clima_data.get('Visibilidad') if clima_data.get('Visibilidad') is not None else '',
-            'Precipitaciones': clima_data.get('Precipitaciones') if clima_data.get('Precipitaciones') is not None else '',
-            'Viento': clima_data.get('Viento') if clima_data.get('Viento') is not None else '',
-            'Temperatura': clima_data.get('Temperatura') if clima_data.get('Temperatura') is not None else ''            
+            'Fecha': str(clima_data[0]) if clima_data[0] is not None else '',
+            'Hora': str(clima_data[1]) if clima_data[1] is not None else '',
+            'Temp': clima_data[2] if clima_data[2] is not None else '',
+            'Nubosidad_porc': clima_data[3] if clima_data[3] is not None else '',
+            'Precip_mm': clima_data[4] if clima_data[4] is not None else '',
+            'Viento_velocidad': clima_data[5] if clima_data[5] is not None else '',
+            'Viento_rafaga': clima_data[6] if clima_data[6] is not None else ''
         }
+
+    recomendaciones = []
+
+    def rule_output(c):
+
+        recomendaciones = []
+        recomendaciones.append({
+            'Accion_Recomendada': c.m['Accion_Recomendada']
+        })
 
     # Enviar los datos al motor de reglas
     try:
-        print(post_data)
+        #print(post_data)
         run_assert_facts(post_data)
+        #recomendacion.set_recomendacion(current_time, )
+        return jsonify({'recomendaciones': recomendaciones})
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-    return jsonify({"message": "Reglas evaluadas correctamente"})
+    #return jsonify({"message": "Reglas evaluadas correctamente"})
 
-### Logout
+#######################################################################################
+#                              Endpoint get_recomendacion
+#######################################################################################
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return render_template('logout.html')
+@app.route('/get_recomendacion', methods=['GET'])
+def get_recomendacion():
+    siniestro_id = request.args.get('siniestro_id', type=int)
+    
+    recomendacion_tupla = recomendacion.get_recomendacion(siniestro_id)
+
+    print(recomendacion_tupla)
+
+    if not siniestro_id :
+        return jsonify({"error": "Faltan parámetros: siniestro_id"}), 400
+
+    try:
+        recomendacion_tupla = recomendacion.get_recomendacion(siniestro_id)
+        print(recomendacion_tupla)
+        recomendacion_data = [
+                {
+                    "Id": recomendacion[0],
+                    "Fecha": str(recomendacion[1]),
+                    "Siniestro_id": recomendacion[2],
+                    "Accion": recomendacion[3],
+                    "Via Id": recomendacion[4],
+                    "Estado": recomendacion[5]
+                } 
+                for recomendacion in recomendacion_tupla
+            ]
+        print(recomendacion_data)
+        return jsonify({"recomendaciones": recomendacion_data}),200
+    
+    except Exception as e:
+        return jsonify({"error": f"Error al obtener recomendaciones: {str(e)}"}), 500
 
 
 if __name__ == "__main__":

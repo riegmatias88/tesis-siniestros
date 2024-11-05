@@ -12,44 +12,9 @@ class Clima:
 
     db = Database()
 
-#Métodos Clima
+    #Métodos Clima
 
-    def get_temp(self, fecha, hora):
-        query = "SELECT temp FROM clima WHERE fecha = %s AND hora = %s"
-        result = self.db.execute_select_queries(query, (fecha, hora))
-        if result:
-            return result[0][0]
-        else:
-            return None
-        
-    def get_viento_rafaga(self, fecha, hora):
-        query = "SELECT viento_rafaga FROM clima WHERE fecha = %s AND hora = %s"
-        result = self.db.execute_select_queries(query, (fecha, hora))
-        if result:
-            return result[0][0]
-        else:
-            return None
-        
-    def get_viento_velocidad(self, fecha, hora):
-        query = "SELECT viento_velocidad FROM clima WHERE fecha = %s AND hora = %s"
-        result = self.db.execute_select_queries(query, (fecha, hora))
-        if result:
-            return result[0][0]
-        else:
-            return None
-        
-    def get_nubosidad_porc(self, fecha, hora):
-        query = "SELECT nubosidad_porc FROM clima WHERE fecha = %s AND hora = %s"
-        result = self.db.execute_select_queries(query, (fecha, hora))
-        if result:
-            return result[0][0]
-        else:
-            return None
-        
-    def get_precip_mm(self, fecha, hora):
-        query = "SELECT precip_mm FROM clima WHERE fecha = %s AND hora = %s"
-        result = self.db.execute_select_queries(query, (fecha, hora))
-        if result:
-            return result[0][0]
-        else:
-            return None
+    def get_clima(self, fecha, hora):
+        query = "SELECT * FROM clima WHERE fecha = %s AND TIME_FORMAT(hora,'%H:00:00') = TIME_FORMAT(%s,'%H:00:00')"
+        params = (fecha,hora)
+        return self.db.execute_select_queries(query, params)
