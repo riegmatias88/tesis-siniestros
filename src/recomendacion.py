@@ -6,9 +6,26 @@ class Recomendacion:
         self.via_id = via_id
         self.estado = estado
 
-    def guardar_recomendacion(self, recomendacion_data):
-        query = "INSERT INTO recomendacion (fecha, accion_id, via_id, estado) VALUES (%s, %s, %s, %s)"
-        self.db.execute_write_query(query, recomendacion_data)
-    
+    def get_recomendacion(self,siniestro_id):
+        query = """
+            SELECT r.id, r.fecha, r.siniestro_id, ra.descripcion, r.via_id, r.estado \
+            FROM recomendacion r INNER JOIN recomendacion_accion ra ON (r.accion_id=ra.id) \
+            WHERE r.siniestro_id = %s
+        """
+        params = (siniestro_id,)
+        try:
+            return self.db.execute_select_queries(query, params)
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")
 
-    
+
+    def set_recomendacion(self, fecha, accion_id, via_id, estado):
+        query = """
+            INSERT INTO recomendacion (fecha, accion_id, via_id, estado) 
+            VALUES (%s, %s, %s, %s)
+        """
+        try:
+            self.db.execute_write_query(query, (fecha, accion_id, via_id, estado))
+
+        except Exception as e:
+            print(f"Error al actualizar la tabla: {e}")

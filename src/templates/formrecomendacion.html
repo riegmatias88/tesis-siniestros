@@ -39,9 +39,12 @@
             let provincia = provinciaSelect.value;
     
             // Deshabilitar localidad si es Ciudad Autónoma de Buenos Aires
-            if (provincia === "Ciudad Autónoma de Buenos Aires") {
+            if (provincia === "Ciudad Autónoma de Buenos Aires") 
+            {
                 localidadSelect.disabled = true;
-            } else {
+            } 
+            else 
+            {
                 localidadSelect.disabled = false;
             }
     
@@ -96,59 +99,226 @@
             }
         }
 
-        function obtenerClusters() {
+        let selectedSiniestroId = null;  // Variable global para almacenar el ID del siniestro seleccionado
+
+        function obtenerSiniestros() {
             let provincia = document.getElementById('provincia').value;
             let departamento = document.getElementById('departamento').value;
             let localidad = document.getElementById('localidad').value;
 
-            fetch(`/get_clusters?provincia=${encodeURIComponent(provincia)}&departamento=${encodeURIComponent(departamento)}&localidad=${encodeURIComponent(localidad)}`)
+            fetch(`/get_siniestros?provincia=${encodeURIComponent(provincia)}&departamento=${encodeURIComponent(departamento)}&localidad=${encodeURIComponent(localidad)}`)
                 .then(response => response.json())
                 .then(data => {
-                    if (data.error) {
-                        alert(data.error);
-                        return;
+                    console.log('Datos de siniestros:', data);
+                    let siniestrosCardsContainer = document.getElementById('siniestros-cards');
+                    siniestrosCardsContainer.innerHTML = '';  // Limpiar tarjetas anteriores
+
+                    if (data.siniestros && data.siniestros.length > 0) {
+                        data.siniestros.forEach(siniestro => {
+                            let card = document.createElement('div');
+                            card.classList.add('card');  // Añadir clase 'card'
+
+                            // Contenido de la tarjeta
+                            card.innerHTML = `
+                                <h3>ID: ${siniestro.Id}</h3>
+                                <p><strong>Fecha:</strong> ${siniestro.Fecha}</p>
+                                <p><strong>Hora:</strong> ${siniestro.Hora}</p>
+                                <p><strong>Tipo de siniestro:</strong> ${siniestro.Tipo}</p>
+                                <p><strong>Categoría de siniestro:</strong> ${siniestro.Categoria}</p>
+                                <p><strong>Calle:</strong> ${siniestro.Calle}</p>
+                                <p><strong>Altura:</strong> ${siniestro.Altura}</p>
+                                <p><strong>Entre calle 1:</strong> ${siniestro.Entre_calle1}</p>
+                                <p><strong>Entre calle 2:</strong> ${siniestro.Entre_calle2}</p>
+                            `;
+
+                            // Lógica de selección
+                            card.addEventListener('click', function () {
+                                // Deseleccionar otras tarjetas
+                                document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+                                
+                                // Seleccionar la tarjeta actual
+                                card.classList.add('selected');
+                                
+                                // Almacenar el ID del siniestro seleccionado
+                                selectedSiniestroId = siniestro.Id;
+                                console.log('Siniestro seleccionado:', selectedSiniestroId);
+                            });
+
+                            // Agregar la tarjeta al contenedor
+                            siniestrosCardsContainer.appendChild(card);
+                        });
+                    } else {
+                        // Si no hay siniestros, mostrar un mensaje
+                        siniestrosCardsContainer.innerHTML = '<p>No se encontraron siniestros</p>';
                     }
-
-                    // Limpiar las opciones anteriores
-                    let clustersListbox = document.getElementById('clusters-listbox');
-                    clustersListbox.innerHTML = '';
-
-                    // Llenar el listbox con los clústeres obtenidos
-                    data.forEach(cluster => {
-                        let option = document.createElement('option');
-                        option.value = cluster.cluster_id;
-                        option.textContent = `Zona ${cluster.cluster_id}: ${cluster.count} siniestros`;
-                        clustersListbox.appendChild(option);
-                    });
-
-                    // Mostrar el listbox de clústeres
-                    document.getElementById('cluster-selection').style.display = 'block';
                 })
                 .catch(error => {
-                    console.error('Error al obtener los clústeres:', error);
-                    alert('Error al obtener los clústeres.');
+                    console.error('Error al obtener los siniestros:', error);
                 });
         }
 
-        function seleccionarCluster() {
-            let selectedOptions = Array.from(document.getElementById('clusters-listbox').selectedOptions);
-            let selectedClusters = selectedOptions.map(option => option.value);
+        function crearRecomendacion() {
+            alert(selectedSiniestroId)
 
-            // Aquí puedes manejar la lógica con los clústeres seleccionados
-            alert("Seleccionaste las Zonas: " + selectedClusters.join(", "));
-            // Puedes mostrar más detalles o realizar otras acciones con los clústeres seleccionados
+            let selectedSiniestroId = getSelectedSiniestroId();  // Replace with how you are capturing selected ID
+
+            if (!selectedSiniestroId) {
+                alert("Please select a siniestro first.");
+                return;
+            }
+
+            // Post data to the advice endpoint
+            fetch(`/advice`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id_siniestro: selectedSiniestroId })
+                //body: JSON.stringify({ Siniestro: { Id: selectedSiniestroId } })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.recomendaciones) {
+                    // Dynamically add recommendations to the page
+                    let recommendationsDiv = document.getElementById('recomendaciones');
+                    recommendationsDiv.innerHTML = '';  // Clear previous results
+
+                    data.recomendaciones.forEach(mensaje => {
+                        let p = document.createElement('p');
+                        p.textContent = mensaje;
+                        recomendacionesDiv.appendChild(p);
+                    });
+                } else {
+                    alert('No se generaron recomendaciones.');
+                }
+            })
+            .catch(error => {
+                console.error('Error al crear la recomendación:', error);
+            });
         }
 
+        function crearRecomendacion2() {
+            //alert(selectedSiniestroId)
 
+            // Si no hay siniestros seleccionados, mostrar una alerta
+            if (!selectedSiniestroId) {
+                alert("Por favor selecciona al menos un siniestro para crear una recomendación.");
+                return;
+            }
 
-        function mostrarFormularioDetalle() {
-            // Esta función puede redirigir a otro formulario o mostrar más detalles
-            alert("Mostrando detalles del clúster " + document.getElementById('clusterId').value);
-            // Aquí puedes añadir lógica para redirigir a otro formulario o mostrar más información
+            // Enviar los siniestros seleccionados para crear una recomendación
+            fetch('/advice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                //body: JSON.stringify({ Id: selectedSiniestroId })
+                //body: JSON.stringify({ Siniestro: { id_siniestro: selectedSiniestroId } })
+                body: JSON.stringify({ id_siniestro: selectedSiniestroId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                //alert("Recomendación creada con éxito.");
+                //alert("Regla 3 - Cruce peatonal");
+
+                console.log('Datos recibidos', data)
+                alert(selectedSiniestroId)
+                //let cu = 1;
+
+                //if (cu == 1) {
+                //    mensaje = 'Regla 16 - Señalización vertical: Reductor de velocidad';
+                //}
+                //else if (cu == 2) {
+                //mensaje = 'Regla 3 - Cruce peatonal';
+                //}
+
+                //else if (cu == 3) {
+                //    mensaje = 'Regla 3 - Cruce peatonal';
+                //}
+
+                //else if (cu == 4) {
+                    //mensaje = 'Regla 1 - Ciclovia';
+                //}
+
+                //else if (cu == 5) {
+                 //   mensaje = 'Regla 19 - Reparar via';
+                //}
+
+                //else if (cu == 6) {
+                    mensaje = 'Regla 12 - Pavimentar via';
+                //}
+
+                //alert(mensaje)
+
+                alert(mensaje)
+                obtenerRecomendacion(id_siniestro)
+            })
+            .catch(error => {
+                console.error('Error al crear la recomendación:', error);
+                alert('Error al crear la recomendación.');
+            });
         }
+
+        function obtenerRecomendacion() {
+            fetch(`/get_recomendacion?siniestro_id=${encodeURIComponent(selectedSiniestroId)}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Datos de recomendaciones:', data);
+                    let recomendacionesCardsContainer = document.getElementById('recomendacion-cards');
+                    let tituloRecomendaciones = document.getElementById('tituloRecomendaciones');
+                    recomendacionesCardsContainer.innerHTML = '';  // Limpiar tarjetas anteriores
+
+                    if (data.recomendaciones && data.recomendaciones.length > 0) {
+                        tituloRecomendaciones.style.display = 'block';  // Mostrar el título
+                        data.recomendaciones.forEach(recomendacion => {
+                            let card = document.createElement('div');
+                            
+                            card.classList.add('card');  // Añadir clase 'card'
+                            
+                            // Contenido de la tarjeta
+                            card.innerHTML = `
+                                <p><strong>Fecha:</strong> ${recomendacion.Fecha}</p>
+                                <p><strong>Accion:</strong> ${recomendacion.Accion}</p>
+                                <p><strong>Estado:</strong> ${recomendacion.Estado}</p>
+                                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                    <button onclick="accionCorrecto()" style="padding: 8px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">Correcto</button>
+                                    <button onclick="accionIncorrecto()" style="padding: 8px 12px; background-color: #f44336; color: white; border: none; border-radius: 3px; cursor: pointer;">Incorrecto</button>
+                                </div>
+                            `;
+
+                            // Lógica de selección
+                            card.addEventListener('click', function () {
+                                // Deseleccionar otras tarjetas
+                                document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
+                                
+                                // Seleccionar la tarjeta actual
+                                card.classList.add('selected');
+                                
+                                // Almacenar el ID del siniestro seleccionado
+                                selectedRecomendacionId = recomendacion.Id;
+                                console.log('Recomendacion seleccionado:', selectedRecomendacionId);
+                            });
+
+                            // Agregar la tarjeta al contenedor
+                            recomendacionesCardsContainer.appendChild(card);
+                        });
+                    } else {
+                        
+                        // Ocultar el título si no hay recomendaciones
+                        tituloRecomendaciones.style.display = 'none';
+                        // Si no hay siniestros, mostrar un mensaje
+                        recomendacionesCardsContainer.innerHTML = '<p>No se encontraron recomendaciones</p>';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al crear la recomendación:', error);
+                    alert('Error al crear la recomendación.');
+                });    
+            }
 
     </script>
 </head>
+
 <body>
     <header>
         <h1>Recomendaciones</h1>
@@ -175,34 +345,23 @@
                 <!-- Las localidades se cargarán aquí dinámicamente -->
             </select>
             <br>
-            <button type="submit">Obtener datos</button>
+            <button type="button" onclick="obtenerSiniestros()">Mostrar siniestros</button>
+            
+            <br>
+            
+            <div id="siniestros-cards" class="cards-container">
+                <!-- Aquí se mostrarán dinámicamente las tarjetas de siniestros -->
+            </div>
+
+            <button type="button" onclick="obtenerRecomendacion()">Generar Recomendacion</button>
             <button type="button" onclick="volver()">Volver</button>
 
+            <h2 id="tituloRecomendaciones" style="display: none;">Recomendaciones</h2>
+            <div id="recomendacion-cards" class="cards-container">
+                <!-- Recommendations will be dynamically inserted here -->
+            </div>
         </form>
-        <form id="cluster-selection" style="display:none;">
-                <h3>Zonas Disponibles</h3>
-                <label for="clusters-listbox">Selecciona una zona:</label>
-                <select id="clusters-listbox" size="5" multiple onchange="seleccionarCluster()">
-                    <!-- Las opciones se agregarán aquí dinámicamente -->
-                </select>
-        </form>
-
-        <form id="selected-cluster-details" style="display:none;">
-            <h3>Detalles de la Zona Seleccionada</h3>
-            <p id="cluster-info"></p>
-            <form id="detailForm" style="display:none;">
-                <!-- Aquí se pueden mostrar más detalles o campos adicionales del clúster seleccionado -->
-                <label for="clusterId">ID de la Zona:</label>
-                <input type="text" id="clusterId" name="clusterId" readonly><br><br>
-                
-                <label for="clusterCount">Cantidad de Siniestros:</label>
-                <input type="text" id="clusterCount" name="clusterCount" readonly><br><br>
-                
-                <button type="button" onclick="mostrarFormularioDetalle()">Ver más detalles</button>
-            </form>
-        </form>
-
-
     </main>
 </body>
+
 </html>

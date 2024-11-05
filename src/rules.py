@@ -5,11 +5,15 @@ from via import Via
 from clima import Clima
 from durable.lang import *
 
+db = Database()
+recomendacion = Recomendacion(db)
 
 def run_assert_facts(post_data):
     assert_fact('recomendacion', post_data)
 
 def load_rules():
+
+    recomendaciones = []
 
     with ruleset('recomendacion'):
 
@@ -22,13 +26,36 @@ def load_rules():
             else:
                 print('POST REGLAS: No se encontró Accion_Recomendada')
 
+        #Regla 0bis
+        @when_all(
+            (m.Via.Estado == 'bueno')
+        )
+        def ejecutar_regla0bis(c):
+            mensaje = 'REGLA 0 Bis - Recomendación: Test'
+            print(mensaje)
+            recomendaciones.append(mensaje)
+            print(recomendaciones)
+            c.assert_fact({
+                'Recomendacion': {
+                    'Accion_Recomendada': recomendaciones
+                }
+            })
+            c.assert_fact({
+                'Recomendacion': {
+                    'Accion_Recomendada': 'SH_Precaucion'
+                }
+            })
+
         #Regla 1
         @when_all(
-            (m.Vehiculo.Tipo == 'bicicleta') & 
-            (m.Via.Ciclovia == 'no')
+            ((m.Siniestro.Participante1 == 'bicicleta') | 
+            (m.Siniestro.Participante2 == 'bicicleta') | 
+            (m.Siniestro.Participante3 == 'bicicleta')) & 
+            (m.Via.Ciclovia == 0)
         )
         def ejecutar_regla1(c):
-            print('REGLA 1 - Recomendación: Ciclovia')
+            mensaje = 'REGLA 1 - Recomendación: Ciclovia'
+            print(mensaje)
             c.assert_fact({
                 'recomendacion': {
                     'Accion_Recomendada': 'Ciclovia'
@@ -38,13 +65,14 @@ def load_rules():
         #Regla 2
         @when_all(
             (m.Vehiculo.Tipo == 'bicicleta') &
-            (m.Via.Ciclovia == 'si') &
+            (m.Via.Ciclovia == 1) &
             (m.Siniestro.Ubicación_siniestro_via == 'intersecciion') &
-            (m.Via.Semaforo_vehicular == 'si') &
-            (m.Via.Semaforo_ciclista == 'no')
+            (m.Via.Semaforo_vehicular == 1) &
+            (m.Via.Semaforo_ciclista == 0)
         )
         def ejecutar_regla2(c):
-            print('REGLA 2 - Recomendación: Semaforo_ciclista')
+            mensaje = 'REGLA 2 - Recomendación: Semaforo_ciclista'
+            print(mensaje)
             c.assert_fact({
                 'recomendacion': {
                     'Accion_Recomendada': 'Semaforo_ciclista'
@@ -56,11 +84,12 @@ def load_rules():
             (m.Siniestro.Flujo_de_transito == 'alto') &
             ((m.Via.Zona == 'comercial') |
             (m.Via.Zona == 'residencial')) &
-            (m.Via.Cruce_peatonal == 'no') & 
-            (m.Via.Semaforo_peatonal == 'no')
+            (m.Via.Cruce_peatonal == 0) & 
+            (m.Via.Semaforo_peatonal == 0)
         )
         def ejecutar_regla3(c):
-            print('REGLA 3 - Recomendación: Cruce_peatonal')
+            mensaje = 'REGLA 3 - Recomendación: Cruce_peatonal'
+            print(mensaje)
             c.assert_fact({
                 'recomendacion': {
                     'Accion_Recomendada': 'Cruce_peatonal'
@@ -71,11 +100,12 @@ def load_rules():
         @when_all(
             (m.Siniestro.Tipo == 'atropello') &
             (m.Siniestro.Ubicacion_siniestro_via == 'cruce_peatonal') &
-            (m.Via.Cruce_peatonal == 'si') &
-            (m.Via.Semaforo_peatonal == 'no')
+            (m.Via.Cruce_peatonal == 1) &
+            (m.Via.Semaforo_peatonal == 0)
         )
         def ejecutar_regla4(c):
-            print('REGLA 4 - Recomendación: Semaforo_peatonal')
+            mensaje = 'REGLA 4 - Recomendación: Semaforo_peatonal'
+            print(mensaje)
             c.assert_fact({
                 'recomendacion': {
                     'Accion_Recomendada': 'Semaforo_peatonal'
@@ -86,11 +116,12 @@ def load_rules():
         @when_all(
             (m.Siniestro.Tipo == 'atropello') &
             (m.Via.Zona == 'escolar') &
-            (m.Via.Senializacion_zona_escolar == 'no') &
-            (m.Via.Senializacion_velocidad_maxima == 'no')
+            (m.Via.Senializacion_zona_escolar == 0) &
+            (m.Via.Senializacion_velocidad_maxima == 0)
         )
         def ejecutar_regla5(c):
-            print('REGLA 5 - Recomendación: Senialización_velocidad_maxima y Senialización_zona_escolar')
+            mensaje = 'REGLA 5 - Recomendación: Senialización_velocidad_maxima y Senialización_zona_escolar'
+            print(mensaje)
             c.assert_fact({
                 'recomendacion': {
                     'Accion_Recomendada': 'Senialización_zona_escolar'
@@ -107,11 +138,12 @@ def load_rules():
             ((m.Via.Zona == 'residencial') |
             (m.Via.Zona == 'comercial'))  &
             (m.Siniestro.Ubicacion_siniestro_via == 'interseccion') &
-            (m.Via.Semaforo_vehicular == 'no') &
-            (m.Via.Reductor_velocidad == 'no')
+            (m.Via.Semaforo_vehicular == 0) &
+            (m.Via.Reductor_velocidad == 0)
         )
         def ejecutar_regla6(c):
-            print('REGLA 6 - Recomendación: Reductor_velocidad y SV_reductor_de_velocidad')
+            mensaje = 'REGLA 6 - Recomendación: Reductor_velocidad y SV_reductor_de_velocidad'
+            print(mensaje)
             c.assert_fact({
                 'recomendacion': {
                     'Accion_Recomendada': 'Reductor_velocidad'
@@ -131,11 +163,12 @@ def load_rules():
             (m.Via.Tipo == 'avenida') &
             (m.Via.Sentido == 'doble') &
             (m.Siniestro.Flujo_de_transito == 'alto') &
-            (m.Via.Semaforo_vehicular == 'no') &
-            (m.Via.Reductor_velocidad == 'no')
+            (m.Via.Semaforo_vehicular == 0) &
+            (m.Via.Reductor_velocidad == 0)
         )
         def ejecutar_regla7(c):
-            print('REGLA 7 - Recomendación: Semaforo_vehicular')
+            mensaje = 'REGLA 7 - Recomendación: Semaforo_vehicular'
+            print(mensaje)
             c.assert_fact({
                 'recomendacion': {
                     'Accion_Recomendada': 'Semaforo_vehicular'
@@ -158,12 +191,14 @@ def load_rules():
 
         #Regla 9
         @when_all(
-            (m.Vehiculo.tipo == 'bicicleta') &
+            ((m.Siniestro.Participante1 == 'bicicleta') |
+            (m.Siniestro.Participante2 == 'bicicleta') |
+            (m.Siniestro.Participante3 == 'bicicleta')) &
             (m.Siniestro.Detalle_siniestro_via == 'mitad_de_via') &
-            (m.Via.Estrechamiento_calzada == 'no') &
-            (m.Via.Ciclovia == 'no') &
-            (m.Via.Tipo == 'calle') &
-            (m.Siniestro.Flujo_de_transito == 'bajo')
+            (m.Via.Estrechamiento_calzada == 0) &
+            (m.Via.Ciclovia == 0) &
+            (m.Via.Tipo == 0) &
+            (m.Siniestro.Flujo_de_transito == 0)
         )
         def ejecutar_regla9(c):
             print('REGLA 9 Recomendación: Implementar Estrechamiento de Calzada y Ciclovía.')
@@ -182,7 +217,7 @@ def load_rules():
         @when_all(
             (m.Siniestro.Tipo == 'alcance') &
             (m.Siniestro.Detalle_siniestro_via == 'mitad_de_via') &
-            (m.Via.Estrechamiento_calzada == 'no') &
+            (m.Via.Estrechamiento_calzada == 0) &
             (m.Via.Tipo == 'calle') &
             (m.Siniestro.Flujo_de_transito == 'bajo')
         )
@@ -198,7 +233,7 @@ def load_rules():
         @when_all(
             (m.Via.Tipo == 'ruta') &
             (m.Siniestro.Tipo == 'frontal') &
-            (m.Via.Senializacion_horizontal == 'no') &
+            (m.Via.Senializacion_horizontal == 0) &
             (m.Siniestro.Ubicacion_siniestro_via == 'curva')
         )
         def ejecutar_regla11(c):
@@ -228,7 +263,7 @@ def load_rules():
             (m.Siniestro.Tipo == 'alcance') &
             ((m.Via.Tipo == 'calle') | (m.Via.Tipo == 'ruta')) &
             (m.Via.Bandas_reductoras == 'no') &
-            (m.Via.Senializacion_velocidad_maxima == 'no')
+            (m.Via.Senializacion_velocidad_maxima == 0)
         )
         def ejecutar_regla13(c):
             print('REGLA 13 - Recomendación: Bandas_reductoras_optico_sonoras y SV_velocidad_maxima')
@@ -247,7 +282,7 @@ def load_rules():
         @when_all(
             (m.Siniestro.Tipo == 'lateral') &
             (m.Siniestro.Detalle_siniestro_via == 'interseccion') &
-            (m.Via.Mini_rotonda == 'no')
+            (m.Via.Mini_rotonda == 0)
         )
         def ejecutar_regla14(c):
             print('REGLA 14 - Recomendación: Mini_rotonda')
@@ -273,8 +308,8 @@ def load_rules():
 
         #Regla 16
         @when_all(
-            (m.Via.Reductor_velocidad == 'si') & 
-            (m.Via.Senializacion_vertical == 'no')
+            (m.Via.Reductor_velocidad == 1) & 
+            (m.Via.Senializacion_vertical == 0)
         )
         def ejecutar_regla16(c):
             print('REGLA 16 - Recomendación: SV_Reductor_velocidad')
@@ -304,7 +339,7 @@ def load_rules():
             (m.Siniestro.Obstaculizacion2 == 'vehiculo') |
             (m.Siniestro.Obstaculizacion3 == 'vehiculo')) & 
             (m.Siniestro.Detalle_siniestro_via == 'interseccion') & 
-            (m.Via.Esquina_cordon_amarillo == 'no')
+            (m.Via.Esquina_cordon_amarillo == 0)
         )
         def ejecutar_regla18(c):
             print('REGLA 18 - Recomendación: Pintar_esquina_cordon_amarillo')
@@ -330,8 +365,8 @@ def load_rules():
 
         #Regla 20
         @when_all(
-            (m.Via.Cruce_peatonal == 'si') & 
-            (m.Via.Senializacion_vertical == 'no')
+            (m.Via.Cruce_peatonal == 1) & 
+            (m.Via.Senializacion_vertical == 0)
         )
         def ejecutar_regla20(c):
             print('REGLA 20 - Recomendación: SV_Cruce_peatonal')
@@ -348,7 +383,7 @@ def load_rules():
             (m.Siniestro.Tipo == 'atropello')) &
             (m.Via.Zona == 'residencial') &
             (m.Siniestro.Ubicacion_siniestro_via == 'recta') &
-            (m.Via.Senializacion_vertical == 'no') &
+            (m.Via.Senializacion_vertical == 0) &
             (m.Siniestro.Flujo_de_transito == 'alto')
         )
         def ejecutar_regla21(c):
@@ -364,7 +399,7 @@ def load_rules():
             (m.Siniestro.Tipo == 'lateral') &
             (m.Siniestro.Ubicacion_siniestro_via == 'interseccion') &
             ((m.Via.Estado == 'grieta') | (m.Via.Estado == 'bache')) &
-            (m.Via.Semaforo_vehicular == 'no') &
+            (m.Via.Semaforo_vehicular == 0) &
             (m.Clima.Visibilidad == 'mala')
         )
         def ejecutar_regla22(c):
@@ -390,8 +425,8 @@ def load_rules():
         #Regla 25
         @when_all(
             (m.Via.Tipo == 'e_s_vehiculos') &
-            (m.Via.Senializacion_vertical == 'no') &
-            (m.Via.Senializacion_horizontal == 'no')
+            (m.Via.Senializacion_vertical == 0) &
+            (m.Via.Senializacion_horizontal == 0)
         )
         def ejecutar_regla25(c):
             print('REGLA 25 - Recomendación: SV_e_s_vehiculos y SH_e_s_vehiculos')
@@ -409,7 +444,7 @@ def load_rules():
         #Regla 26
         @when_all(
             (m.Via.Ferrovia == 'si') &
-            (m.Via.Senializacion_vertical == 'no')
+            (m.Via.Senializacion_vertical == 0)
         )
         def ejecutar_regla26(c):
             print('REGLA 26 - Recomendación: SV_Cartel_ferroviario')
@@ -423,7 +458,7 @@ def load_rules():
         @when_all(
             ((m.Via.Material == 'ripio') |
             (m.Via.Material =='tierra')) &
-            (m.Via.Cuneta == 'no')
+            (m.Via.Cuneta == 0)
         )
         def ejecutar_regla27(c):
             print('REGLA 27 - Recomendación: Cuneta')
@@ -436,9 +471,9 @@ def load_rules():
         #Regla 28
         @when_all(
             (m.Via.Estado == 'grieta') &
-            (m.Via.Senializacion_temporal == 'no') &
-            (m.Via.Senializacion_vertical == 'no') &
-            (m.Via.Senializacion_horizontal == 'no')
+            (m.Via.Senializacion_temporal == 0) &
+            (m.Via.Senializacion_vertical == 0) &
+            (m.Via.Senializacion_horizontal == 0)
         )
         def ejecutar_regla28(c):
             print('REGLA 28 - Recomendación: Señalización de Precaución (SV y SH)')
@@ -452,3 +487,5 @@ def load_rules():
                     'Accion_Recomendada': 'SH_Precaucion'
                 }
             })
+
+

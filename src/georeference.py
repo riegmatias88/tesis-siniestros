@@ -5,7 +5,7 @@ import pandas as pd
 
 def fetch_data(db, provincia, departamento, localidad):
     query = f"""
-    SELECT s.latitud, s.longitud 
+    SELECT s.latitud, s.longitud
     FROM siniestro s
     INNER JOIN localidad l ON (s.localidad_id = l.id)
     WHERE s.categoria_del_Siniestro_id in (1,2) 
@@ -15,6 +15,17 @@ def fetch_data(db, provincia, departamento, localidad):
     """
     data = db.execute_query(query)
     return data
+
+#def fetch_data(db, provincia, departamento, localidad):
+#    query = f"""
+#    SELECT s.latitud, s.longitud 
+#    FROM siniestro_v3 s
+#    INNER JOIN localidad l ON (s.localidad_id = l.id)
+#    WHERE s.categoria in (1,2)
+#    AND s.localidad_id IN (select id FROM localidad WHERE provincia_desc = '{provincia}' AND departamento_desc = '{departamento}' AND localidad_desc = '{localidad}')"
+#    """
+#    data = db.execute_query(query)
+#    return data
 
 ## Main ##
 def run_georeference(provincia, departamento, localidad):
