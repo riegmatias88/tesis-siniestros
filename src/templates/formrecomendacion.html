@@ -179,9 +179,9 @@
             .then(response => response.json())
             .then(data => {
                 if (data.recomendaciones) {
-                    // Dynamically add recommendations to the page
+                    // Agrego las recomendaciones dinamicamente
                     let recommendationsDiv = document.getElementById('recomendaciones');
-                    recommendationsDiv.innerHTML = '';  // Clear previous results
+                    recommendationsDiv.innerHTML = '';  // Limpio resultados previos
 
                     data.recomendaciones.forEach(mensaje => {
                         let p = document.createElement('p');
@@ -261,7 +261,7 @@
                                 // Seleccionar la tarjeta actual
                                 card.classList.add('selected');
                                 
-                                // Almacenar el ID del siniestro seleccionado
+                                // Almacenar el ID de la recomendacion seleccionada
                                 selectedRecomendacionId = recomendacion.Id;
                                 console.log('Recomendacion seleccionado:', selectedRecomendacionId);
                             });
@@ -312,18 +312,18 @@
                 <!-- Las localidades se cargarán aquí dinámicamente -->
             </select>
             <br>
-            <button type="button" onclick="obtenerSiniestros()">Mostrar siniestros</button>
+            <button type="button" onclick="obtenerSiniestros()">Ver siniestros</button>
             
             <br>
             
             <div id="siniestros-cards" class="cards-container">
                 <!-- Aquí se mostrarán dinámicamente las tarjetas de siniestros -->
             </div>
-            <button type="button" onclick="crearRecomendacion2()">Ejecutar reglas</button>
-            <button type="button" onclick="obtenerRecomendacion()">Generar Recomendacion</button>
+            <button type="button" onclick="crearRecomendacion2()">Analizar siniestro</button>
+            <button type="button" onclick="obtenerRecomendacion()">Ver recomendaciones</button>
             <button type="button" onclick="volver()">Volver</button>
 
-            <h2 id="tituloRecomendaciones" style="display: none;">Recomendaciones</h2>
+            <h2 id="tituloRecomendaciones" style="display: none;">Recomendaciones siniestro #8</h2>
             <div id="recomendacion-cards" class="cards-container">
                 <!-- Recommendations will be dynamically inserted here -->
             </div>

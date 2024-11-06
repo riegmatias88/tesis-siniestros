@@ -18,7 +18,7 @@ def load_rules():
 
     now = datetime.now().strftime("%Y-%m-%d")
     print (now)
-    estado = 'Feedback pendiente'
+    estado = 'pendiente'
 
     with ruleset('recomendacion'):
 
