@@ -318,22 +318,33 @@ load_rules()
 @app.route('/advice', methods=['POST'])
 def advice_rule():
 
-    id_siniestro = 1 #este id luego tiene que venir en el POST
-    id_via = 1 #este id luego tiene que venir en el POST
+    siniestro_id = request.args.get('siniestro_id', type=int)
+    if not siniestro_id:
+        return jsonify({"error": "Faltan parámetros: siniestro_id"}), 400
+
+    #via_id = request.args.get('via_id', type=int)
+    #if not via_id:
+    #    return jsonify({"error": "Faltan parámetros: via_id"}), 400
+
+    #id_siniestro = 5 #este id luego tiene que venir en el POST
+    #id_via = 2 #este id luego tiene que venir en el POST
 
     data = request.get_json()  # Obtener los datos enviados en el body de la petición
     
+    print(data)
+
     # Verificar si existen los campos 'Vehiculo', 'Via', 'Siniestro', 'Clima'
     via_data = data.get('Via', {})
     siniestro_data = data.get('Siniestro', {})
     clima_data = data.get('Clima', {})
 
     #Busco los datos de siniestros en la base de datos
-    siniestro_data = siniestro.get_siniestro_by_id(id_siniestro)
+    siniestro_data = siniestro.get_siniestro_by_id(siniestro_id)
     siniestro_data = siniestro_data[0]
+    #id_via = siniestro_data[9]
 
-    via_data = via.get_via_by_id(id_via)
-    via_data = via_data[0]
+
+
 
     # Preparar los datos para el motor de reglas, solo si existen
     post_data = {}
@@ -361,6 +372,11 @@ def advice_rule():
             'Ubicacion_siniestro_via': siniestro_data[18] if siniestro_data[18] is not None else '',
             'Zona': siniestro_data[19] if siniestro_data[19] is not None else ''
         }
+
+    id_via = siniestro_data[9]
+    print('Id de la via seleccionada:',id_via)
+    via_data = via.get_via_by_id(id_via)
+    via_data = via_data[0]
 
     if via_data:
         post_data['Via'] = {
@@ -449,25 +465,15 @@ def advice_rule():
 
     recomendaciones = []
 
-    def rule_output(c):
-
-        recomendaciones = []
-        recomendaciones.append({
-            'Accion_Recomendada': c.m['Accion_Recomendada']
-        })
-
     # Enviar los datos al motor de reglas
     try:
-        #print(post_data)
+        print("Datos para el motor de reglas:", post_data)
         run_assert_facts(post_data)
-        #recomendacion.set_recomendacion(current_time, )
         return jsonify({'recomendaciones': recomendaciones})
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-    #return jsonify({"message": "Reglas evaluadas correctamente"})
-
 #######################################################################################
 #                              Endpoint get_recomendacion
 #######################################################################################

@@ -19,13 +19,13 @@ class Recomendacion:
             print(f"Error al consultar la tabla: {e}")
 
 
-    def set_recomendacion(self, fecha, accion_id, via_id, estado):
+    def set_recomendacion(self, fecha, siniestro_id, accion_id, via_id, estado):
         query = """
-            INSERT INTO recomendacion (fecha, accion_id, via_id, estado) 
-            VALUES (%s, %s, %s, %s)
+            INSERT INTO recomendacion (fecha, siniestro_id, accion_id, via_id, estado) 
+            VALUES (%s, %s, %s, %s, %s)
         """
         try:
-            self.db.execute_write_query(query, (fecha, accion_id, via_id, estado))
+            self.db.execute_write_query(query, (fecha, siniestro_id , accion_id, via_id, estado))
 
         except Exception as e:
             print(f"Error al actualizar la tabla: {e}")

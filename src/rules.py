@@ -4,6 +4,7 @@ from siniestro import Siniestro
 from via import Via
 from clima import Clima
 from durable.lang import *
+from datetime import datetime
 
 db = Database()
 recomendacion = Recomendacion(db)
@@ -15,29 +16,33 @@ def load_rules():
 
     recomendaciones = []
 
-    with ruleset('recomendacion'):
+    now = datetime.now().strftime("%Y-%m-%d")
+    print (now)
+    estado = 'Feedback pendiente'
 
-        # Regla 0: Si contiene Accion_Recomendada, imprimirla
-        @when_all(m.Accion_Recomendada)
-        def ejecutar_regla0(c):
-            print('Entrando en la regla de acción recomendada')
-            if 'Accion_Recomendada' in c.m:
-                print(f'POST REGLAS: Acción Recomendada: {c.m.Accion_Recomendada}')
-            else:
-                print('POST REGLAS: No se encontró Accion_Recomendada')
+    with ruleset('recomendacion'):
 
         #Regla 0bis
         @when_all(
             (m.Via.Estado == 'bueno')
         )
         def ejecutar_regla0bis(c):
-            mensaje = 'REGLA 0 Bis - Recomendación: Test'
-            print(mensaje)
-            recomendaciones.append(mensaje)
-            print(recomendaciones)
+            print("Regla 0bis activada: Estado de la vía es 'bueno'")
+            accion = 'REGLA 0 Bis - Recomendación: Test'
+            accion_id = 100
+            recomendacion.set_recomendacion(now, c.m.Siniestro.Id, accion_id, c.m.Via.Id, estado)
+            #recomendaciones.append(accion)
+            #print(recomendaciones)
+            recomendaciones.append({
+                "Id": accion_id,
+                "Fecha": now,
+                "Accion": accion,
+                "Via_Id": c.m.Via.Id,
+                "Estado": "pendiente"
+            })
             c.assert_fact({
                 'Recomendacion': {
-                    'Accion_Recomendada': recomendaciones
+                    'Accion_Recomendada': accion
                 }
             })
             c.assert_fact({

@@ -198,7 +198,6 @@
         }
 
         function crearRecomendacion2() {
-            //alert(selectedSiniestroId)
 
             // Si no hay siniestros seleccionados, mostrar una alerta
             if (!selectedSiniestroId) {
@@ -207,56 +206,24 @@
             }
 
             // Enviar los siniestros seleccionados para crear una recomendación
-            fetch('/advice', {
+            fetch(`/advice?siniestro_id=${encodeURIComponent(selectedSiniestroId)}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json'                   
                 },
-                //body: JSON.stringify({ Id: selectedSiniestroId })
-                //body: JSON.stringify({ Siniestro: { id_siniestro: selectedSiniestroId } })
-                body: JSON.stringify({ id_siniestro: selectedSiniestroId })
+                body: JSON.stringify({})
             })
-            .then(response => response.json())
-            .then(data => {
-                //alert("Recomendación creada con éxito.");
-                //alert("Regla 3 - Cruce peatonal");
-
-                console.log('Datos recibidos', data)
-                alert(selectedSiniestroId)
-                //let cu = 1;
-
-                //if (cu == 1) {
-                //    mensaje = 'Regla 16 - Señalización vertical: Reductor de velocidad';
-                //}
-                //else if (cu == 2) {
-                //mensaje = 'Regla 3 - Cruce peatonal';
-                //}
-
-                //else if (cu == 3) {
-                //    mensaje = 'Regla 3 - Cruce peatonal';
-                //}
-
-                //else if (cu == 4) {
-                    //mensaje = 'Regla 1 - Ciclovia';
-                //}
-
-                //else if (cu == 5) {
-                 //   mensaje = 'Regla 19 - Reparar via';
-                //}
-
-                //else if (cu == 6) {
-                    mensaje = 'Regla 12 - Pavimentar via';
-                //}
-
-                //alert(mensaje)
-
-                alert(mensaje)
-                obtenerRecomendacion(id_siniestro)
-            })
-            .catch(error => {
-                console.error('Error al crear la recomendación:', error);
-                alert('Error al crear la recomendación.');
-            });
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Recomendacion generada:', data.recomendaciones)
+                    alert(selectedSiniestroId)
+                    //alert(mensaje)
+                    //obtenerRecomendacion(siniestro_id)
+                })
+                .catch(error => {
+                    console.error('Error al crear la recomendación:', error);
+                    alert('Error al crear la recomendación.');
+                });
         }
 
         function obtenerRecomendacion() {
@@ -352,7 +319,7 @@
             <div id="siniestros-cards" class="cards-container">
                 <!-- Aquí se mostrarán dinámicamente las tarjetas de siniestros -->
             </div>
-
+            <button type="button" onclick="crearRecomendacion2()">Ejecutar reglas</button>
             <button type="button" onclick="obtenerRecomendacion()">Generar Recomendacion</button>
             <button type="button" onclick="volver()">Volver</button>
 
