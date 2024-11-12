@@ -390,8 +390,8 @@ def advice_rule():
             'Estado': via_data[7] if via_data[7] is not None else '',
             'Localidad_id': via_data[8] if via_data[8] is not None else '',
             'Ciclovia': via_data[9] if via_data[9] is not None else '0',
-            'Semaforo_peatonal': via_data[10] if via_data[10] is not None else '0',
-            'Semaforo_vehicular': via_data[11] if via_data[11] is not None else '0',
+            'Semaforo_vehicular': via_data[10] if via_data[10] is not None else '0',
+            'Semaforo_peatonal': via_data[11] if via_data[11] is not None else '0',
             'Semaforo_ciclistas': via_data[12] if via_data[12] is not None else '0',
             'Chicana': via_data[13] if via_data[13] is not None else '0',
             'Bandas_reductoras': via_data[14] if via_data[14] is not None else '0',
@@ -400,7 +400,7 @@ def advice_rule():
             'Meseta_elevada': via_data[17] if via_data[17] is not None else '0',
             'Isleta_giro': via_data[18] if via_data[18] is not None else '0',
             'Iuminaria': via_data[19] if via_data[19] is not None else '0',
-            'Limpieza': via_data[20] if via_data[20] is not None else '0',
+            'Limpieza': via_data[20] if via_data[20] is not None else '1',
             'Iluminacion_uniforme': via_data[21] if via_data[21] is not None else '0',
             'Veredas_optimas': via_data[22] if via_data[22] is not None else '0',
             'Carril_omnibus': via_data[23] if via_data[23] is not None else '0',
@@ -442,7 +442,12 @@ def advice_rule():
             'Senalizacion_rotonda': via_data[59] if via_data[59] is not None else '0',
             'Polvo': via_data[60] if via_data[60] is not None else '0',
             'Zanjas': via_data[61] if via_data[61] is not None else '0',
-            'Zanjas_contencion': via_data[62] if via_data[62] is not None else '0'
+            'Zanjas_contencion': via_data[62] if via_data[62] is not None else '0',
+            'Cruce_peatonal': via_data[63] if via_data[63] is not None else '0', # agregar al form
+            'Esquina_cordon_amarillo': via_data[64] if via_data[64] is not None else '0', #agregar al form
+            'Senalizacion_e_s_vehiculos': via_data[65] if via_data[65] is not None else '0', #agregar al form
+            'SV_ferroviario': via_data[66] if via_data[66] is not None else '0' #agregar al form
+
         }
 
     #Guardo los datos de fecha y hora para buscar los datos del clima
@@ -460,7 +465,8 @@ def advice_rule():
             'Nubosidad_porc': clima_data[3] if clima_data[3] is not None else '',
             'Precip_mm': clima_data[4] if clima_data[4] is not None else '',
             'Viento_velocidad': clima_data[5] if clima_data[5] is not None else '',
-            'Viento_rafaga': clima_data[6] if clima_data[6] is not None else ''
+            'Viento_rafaga': clima_data[6] if clima_data[6] is not None else '',
+            'Visibilidad': clima_data[7] if clima_data[7] is not None else ''
         }
 
     recomendaciones = []
@@ -509,6 +515,31 @@ def get_recomendacion():
     except Exception as e:
         return jsonify({"error": f"Error al obtener recomendaciones: {str(e)}"}), 500
 
+#######################################################################################
+#                              Endpoint actualizar_recomendacion_estado
+#######################################################################################
+
+@app.route('/actualizar_recomendacion_estado', methods=['POST'])
+def actualizar_recomendacion_estado():
+    data = request.get_json()
+    recomendacion_id = data.get('id')
+    nuevo_estado = data.get('estado')
+    print(recomendacion_id)
+    print(nuevo_estado)
+    
+    if not recomendacion_id or not nuevo_estado:
+        return jsonify({"error": "ID o estado faltante"}), 400
+
+    try:
+        # Actualiza el estado en la base de datos
+        recomendacion.set_recomendacion_estado(recomendacion_id, nuevo_estado)
+        return jsonify({"message": "Estado actualizado con éxito"}), 200
+    except Exception as e:
+        return jsonify({"error": f"Error al actualizar el estado: {str(e)}"}), 500
+
+#######################################################################################
+#                              Run Flask
+#######################################################################################
 
 if __name__ == "__main__":
     app.run(debug=True)

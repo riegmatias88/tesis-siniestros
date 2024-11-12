@@ -158,46 +158,6 @@
         }
 
         function crearRecomendacion() {
-            alert(selectedSiniestroId)
-
-            let selectedSiniestroId = getSelectedSiniestroId();  // Replace with how you are capturing selected ID
-
-            if (!selectedSiniestroId) {
-                alert("Please select a siniestro first.");
-                return;
-            }
-
-            // Post data to the advice endpoint
-            fetch(`/advice`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id_siniestro: selectedSiniestroId })
-                //body: JSON.stringify({ Siniestro: { Id: selectedSiniestroId } })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.recomendaciones) {
-                    // Agrego las recomendaciones dinamicamente
-                    let recommendationsDiv = document.getElementById('recomendaciones');
-                    recommendationsDiv.innerHTML = '';  // Limpio resultados previos
-
-                    data.recomendaciones.forEach(mensaje => {
-                        let p = document.createElement('p');
-                        p.textContent = mensaje;
-                        recomendacionesDiv.appendChild(p);
-                    });
-                } else {
-                    alert('No se generaron recomendaciones.');
-                }
-            })
-            .catch(error => {
-                console.error('Error al crear la recomendación:', error);
-            });
-        }
-
-        function crearRecomendacion2() {
 
             // Si no hay siniestros seleccionados, mostrar una alerta
             if (!selectedSiniestroId) {
@@ -216,13 +176,13 @@
                 .then(response => response.json())
                 .then(data => {
                     console.log('Recomendacion generada:', data.recomendaciones)
-                    alert(selectedSiniestroId)
-                    //alert(mensaje)
-                    //obtenerRecomendacion(siniestro_id)
+                    mensaje='Siniestro analizado correctamente'
+                    alert(mensaje)
                 })
                 .catch(error => {
                     console.error('Error al crear la recomendación:', error);
-                    alert('Error al crear la recomendación.');
+                    mensaje='Error al crear la recomendación'
+                    alert(mensaje);
                 });
         }
 
@@ -248,8 +208,8 @@
                                 <p><strong>Accion:</strong> ${recomendacion.Accion}</p>
                                 <p><strong>Estado:</strong> ${recomendacion.Estado}</p>
                                 <div style="display: flex; gap: 10px; margin-top: 10px;">
-                                    <button onclick="accionCorrecto()" style="padding: 8px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">Correcto</button>
-                                    <button onclick="accionIncorrecto()" style="padding: 8px 12px; background-color: #f44336; color: white; border: none; border-radius: 3px; cursor: pointer;">Incorrecto</button>
+                                    <button onclick="accionCorrecto(${recomendacion.Id})" style="padding: 8px 12px; background-color: #4CAF50; color: white; border: none; border-radius: 3px; cursor: pointer;">Correcto</button>
+                                    <button onclick="accionIncorrecto(${recomendacion.Id})" style="padding: 8px 12px; background-color: #f44336; color: white; border: none; border-radius: 3px; cursor: pointer;">Incorrecto</button>
                                 </div>
                             `;
 
@@ -282,7 +242,34 @@
                     alert('Error al crear la recomendación.');
                 });    
             }
+        
+            function accionCorrecto(id) {
+                actualizarEstadoRecomendacion(id, 'correcto');
+            }
 
+            function accionIncorrecto(id) {
+                actualizarEstadoRecomendacion(id, 'incorrecto');
+            }
+
+            function actualizarEstadoRecomendacion(id, nuevoEstado) {
+                fetch(`/actualizar_recomendacion_estado`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: id, estado: nuevoEstado })
+                })
+                .then(response => {
+                    if (response.ok) {
+                        console.log(`Estado actualizado a ${nuevoEstado} para recomendación con id ${id}`);
+                        // Aquí puedes actualizar el estado en la tarjeta visualmente si lo deseas
+                    } else {
+                        console.error('Error al actualizar el estado');
+                    }
+                })
+                .catch(error => console.error('Error en la solicitud:', error));
+            }
+        
     </script>
 </head>
 
@@ -319,7 +306,7 @@
             <div id="siniestros-cards" class="cards-container">
                 <!-- Aquí se mostrarán dinámicamente las tarjetas de siniestros -->
             </div>
-            <button type="button" onclick="crearRecomendacion2()">Analizar siniestro</button>
+            <button type="button" onclick="crearRecomendacion()">Analizar siniestro</button>
             <button type="button" onclick="obtenerRecomendacion()">Ver recomendaciones</button>
             <button type="button" onclick="volver()">Volver</button>
 

@@ -31,12 +31,13 @@ class Recomendacion:
             print(f"Error al actualizar la tabla: {e}")
 
     def set_recomendacion_estado(self, id, estado):
+        estado=str(estado)
         query = """
             UPDATE recomendacion SET estado = %s
             WHERE id = %s
         """
         try:
-            self.db.execute_write_query(query, (id, estado))
+            self.db.execute_write_query(query, (estado, id))
 
         except Exception as e:
             print(f"Error al actualizar la tabla: {e}")
