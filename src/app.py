@@ -296,7 +296,8 @@ def get_siniestros():
                     "Calle": siniestro[5],
                     "Altura": siniestro[6],
                     "Entre_calle1": siniestro[7],
-                    "Entre_calle2": siniestro[8]
+                    "Entre_calle2": siniestro[8],
+                    "Analizado": recomendacion.has_recomendacion(siniestro[0])
                 } 
                 for siniestro in siniestro_tupla
             ]

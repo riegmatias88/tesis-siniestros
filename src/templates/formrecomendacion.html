@@ -129,6 +129,11 @@
                                 <p><strong>Altura:</strong> ${siniestro.Altura}</p>
                                 <p><strong>Entre calle 1:</strong> ${siniestro.Entre_calle1}</p>
                                 <p><strong>Entre calle 2:</strong> ${siniestro.Entre_calle2}</p>
+                                <p>
+                                    ${siniestro.Analizado 
+                                        ? '<span style="background-color: green; color: white; padding: 5px 10px; border-radius: 20px;">✓ Analizado</span>' 
+                                        : '<span style="background-color: red; color: white; padding: 5px 10px; border-radius: 20px;">⚠️ Pendiente</span>'}
+                                </p>
                             `;
 
                             // Lógica de selección
@@ -178,6 +183,7 @@
                     console.log('Recomendacion generada:', data.recomendaciones)
                     mensaje='Siniestro analizado correctamente'
                     alert(mensaje)
+                    obtenerSiniestros()
                 })
                 .catch(error => {
                     console.error('Error al crear la recomendación:', error);
@@ -196,6 +202,7 @@
                     recomendacionesCardsContainer.innerHTML = '';  // Limpiar tarjetas anteriores
 
                     if (data.recomendaciones && data.recomendaciones.length > 0) {
+                        tituloRecomendaciones.textContent = `Recomendaciones siniestro #${selectedSiniestroId}`;  // Actualiza el número de ID
                         tituloRecomendaciones.style.display = 'block';  // Mostrar el título
                         data.recomendaciones.forEach(recomendacion => {
                             let card = document.createElement('div');
@@ -261,8 +268,9 @@
                 })
                 .then(response => {
                     if (response.ok) {
-                        console.log(`Estado actualizado a ${nuevoEstado} para recomendación con id ${id}`);
+                        console.log(`Estado actualizado a ${nuevoEstado} para recomendación con id ${id}`)
                         // Aquí puedes actualizar el estado en la tarjeta visualmente si lo deseas
+                        obtenerRecomendacion();
                     } else {
                         console.error('Error al actualizar el estado');
                     }
@@ -310,7 +318,7 @@
             <button type="button" onclick="obtenerRecomendacion()">Ver recomendaciones</button>
             <button type="button" onclick="volver()">Volver</button>
 
-            <h2 id="tituloRecomendaciones" style="display: none;">Recomendaciones siniestro #8</h2>
+            <h2 id="tituloRecomendaciones" style="display: none;"></h2>
             <div id="recomendacion-cards" class="cards-container">
                 <!-- Recommendations will be dynamically inserted here -->
             </div>

@@ -41,3 +41,9 @@ class Recomendacion:
 
         except Exception as e:
             print(f"Error al actualizar la tabla: {e}")
+
+    def has_recomendacion(self, id_siniestro):
+        query = "SELECT * FROM recomendacion WHERE siniestro_id = %s"
+        params = (id_siniestro,)
+        resultados = self.db.execute_select_queries(query, params)
+        return bool(resultados)  # Devuelve True si hay resultados, False si está vacío
