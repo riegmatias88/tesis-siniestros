@@ -11,8 +11,15 @@
         <h1>Has cerrado sesión</h1>
     </header>
     <main>
-        <p>Has cerrado sesión correctamente. <a href="{{ url_for('index') }}">Login</a>.</p>
+        <p>Has cerrado sesión correctamente</p>
+        <button id="login" data-url="{{ url_for('login') }}">Iniciar sesión</button>
     </main>
+    <script>
+        document.getElementById('login').addEventListener('click', function () {
+            const url = this.getAttribute('data-url');
+            window.location.href = url;
+        });
+    </script>
 </body>
 </html>
 

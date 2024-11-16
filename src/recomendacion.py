@@ -6,6 +6,17 @@ class Recomendacion:
         self.via_id = via_id
         self.estado = estado
 
+    def get_full_recomendacion(self):
+        query = """
+            SELECT *
+            FROM recomendacion \
+        """
+        params = ()
+        try:
+            return self.db.execute_select_queries(query, params)
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")
+
     def get_recomendacion(self,siniestro_id):
         query = """
             SELECT r.id, r.fecha, r.siniestro_id, ra.descripcion, r.via_id, r.estado \
@@ -41,3 +52,16 @@ class Recomendacion:
 
         except Exception as e:
             print(f"Error al actualizar la tabla: {e}")
+
+    def has_recomendacion(self, id_siniestro):
+        query = """
+            SELECT * 
+            FROM recomendacion 
+            WHERE siniestro_id = %s
+        """
+        params = (id_siniestro,)
+        try:
+            resultados = self.db.execute_select_queries(query, params)
+            return bool(resultados)  # Devuelve True si hay resultados, False si está vacío
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")

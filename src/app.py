@@ -1,16 +1,19 @@
-from flask import Flask, render_template, request, jsonify, url_for, session
+from flask import Flask, render_template, request, jsonify, url_for, session, flash, redirect
 #from requests import post
 from durable.lang import post
 from database import Database
 from clima import Clima
-from heatmap import run_heatmap
-from georeference import run_georeference
-from clustering_perimetro import run_clustering_zonas
-from get_recomendation import get_clusters
+#from heatmap import run_heatmap
+#from georeference import run_georeference
+#from clustering_perimetro import run_clustering_zonas
+from mapas import run_georeference,run_heatmap,run_clustering_zonas,run_georeference_by_id
+#from get_recomendation import get_clusters
 from via import Via
 from localidad import Localidad
 from siniestro import Siniestro
 from recomendacion import Recomendacion
+from usuario import Usuario
+import export
 from rules import load_rules, run_assert_facts
 from datetime import datetime
 import logging
@@ -26,8 +29,10 @@ via = Via(db)
 localidad = Localidad(db)
 siniestro = Siniestro(db)
 recomendacion = Recomendacion(db)
+usuario = Usuario(db)
 
 # Configurar el registro de depuración
+
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -35,14 +40,38 @@ logger = logging.getLogger(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/modal')
-def mostrar_modal():
-    return render_template('modal.html')
+#######################################################################################
+#                              Endpoint Login
+#######################################################################################
 
-@app.route('/logout')
-def logout():
-    session.clear()
-    return render_template('logout.html')
+
+@app.route('/login')
+def login():
+    return render_template('login.html')
+
+# Ruta para procesar el login
+@app.route('/login', methods=['POST'])
+def login_post():
+    username = request.form.get('username')
+    password = request.form.get('password')
+
+    # Validación simple de credenciales (reemplazar con una lógica real)
+
+    user=usuario.has_username(username)
+    passwd=usuario.validate_password(username,password)
+    print(user,password)
+
+    if user == True and passwd == True:
+        flash("Inicio de sesión exitoso", "success")
+        return redirect(url_for('index'))  # Redirige a un dashboard o página principal
+    else:
+        flash("Usuario o contraseña incorrectos", "error")
+        return redirect(url_for('login'))
+
+#######################################################################################
+#                              Endpoint georreferenciar
+#######################################################################################
+
 
 @app.route('/get_clima', methods=['POST'])
 def get_clima():
@@ -82,7 +111,9 @@ def get_localidades():
         return jsonify({"localidades": []})
 
 
-### Mapa de calor
+#######################################################################################
+#                              Endpoint mapa de calor
+#######################################################################################
 
 @app.route('/formheatmap')
 def formheatmap():
@@ -98,7 +129,9 @@ def run_heatmap_route():
     run_heatmap(provincia, departamento, localidad)
     return jsonify(status="Mapa generado", file_url=url_for('static', filename='heatmap.html'))
 
-### Georreferencia
+#######################################################################################
+#                              Endpoint georreferenciar
+#######################################################################################
 
 @app.route('/formgeoreference')
 def formgeolocalizacion():
@@ -114,7 +147,21 @@ def georreferenciar():
     run_georeference(provincia, departamento, localidad)
     return jsonify(status="Mapa generado", file_url=url_for('static', filename='georeferencemap.html'))
 
-### Agrupar zonas
+#######################################################################################
+#                              Endpoint ver_mapa
+#######################################################################################
+
+@app.route('/ver_mapa', methods=['POST'])
+def vermapa():
+    data = request.get_json()
+    app.logger.debug(f'Recibido run_georeference: {data}')
+    id_siniestro = data['id_siniestro']
+    run_georeference_by_id(id_siniestro)
+    return jsonify(status="Mapa generado", file_url=url_for('static', filename='georeferencemap.html'))
+
+#######################################################################################
+#                              Endpoint agrupar zonas
+#######################################################################################
 
 @app.route('/formagruparzonas')
 def formagruparzonas():
@@ -142,7 +189,9 @@ def get_material():
     material = via.get_material(calle, altura, ciudad)
     return jsonify(material=material)
 
-### Form in-situ
+#######################################################################################
+#                              Endpoint Form Inspeccion in-situ
+#######################################################################################
 
 @app.route('/forminsitu_menu')
 def forminsitu_menu():
@@ -296,7 +345,8 @@ def get_siniestros():
                     "Calle": siniestro[5],
                     "Altura": siniestro[6],
                     "Entre_calle1": siniestro[7],
-                    "Entre_calle2": siniestro[8]
+                    "Entre_calle2": siniestro[8],
+                    "Analizado": recomendacion.has_recomendacion(siniestro[0])
                 } 
                 for siniestro in siniestro_tupla
             ]
@@ -342,9 +392,6 @@ def advice_rule():
     siniestro_data = siniestro.get_siniestro_by_id(siniestro_id)
     siniestro_data = siniestro_data[0]
     #id_via = siniestro_data[9]
-
-
-
 
     # Preparar los datos para el motor de reglas, solo si existen
     post_data = {}
@@ -537,9 +584,38 @@ def actualizar_recomendacion_estado():
     except Exception as e:
         return jsonify({"error": f"Error al actualizar el estado: {str(e)}"}), 500
 
+
+#######################################################################################
+#                              Endpoint export data
+#######################################################################################
+
+@app.route('/formexportdata')
+def exportdata():
+    return render_template('formexportdata.html')
+
+# Definir una ruta en Flask para llamar a esta función
+@app.route('/exportsiniestro', methods=['GET'])
+def exportsiniestro():
+    export.export_siniestro()
+
+@app.route('/exportrecomendacion')
+def exportrecomendacion():
+    export.export_recomendacion()
+    #session.clear()
+
+#######################################################################################
+#                              Endpoint logout
+#######################################################################################
+
+@app.route('/logout')
+def logout():
+    session.clear()
+    return render_template('logout.html')
+
 #######################################################################################
 #                              Run Flask
 #######################################################################################
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    #app.run(debug=True)
+    app.run(host='127.0.0.1', port=8080, debug=True)

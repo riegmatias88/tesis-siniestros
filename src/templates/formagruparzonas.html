@@ -109,9 +109,18 @@
                 body: JSON.stringify({ provincia: provincia, departamento: departamento, localidad: localidad })
             });
             const data = await response.json();
-            alert(data.status);
+
             if (data.file_url) {
-                window.open(data.file_url, '_blank');
+                // Mostrar el mapa en el iframe
+                let mapFrame = document.getElementById("mapFrame");
+                let mapTitle = document.getElementById("mapTitle");
+
+                mapFrame.src = data.file_url; // Actualizar la URL del mapa
+                mapFrame.style.display = "block"; // Mostrar el iframe
+                mapTitle.style.display = "block"; // Mostrar el título
+
+            } else {
+                alert("Error al generar el mapa");
             }
         }
     </script>
@@ -144,6 +153,11 @@
             <br>
             <button type="submit">Generar Mapa</button>
             <button type="button" onclick="volver()">Volver</button>
+
+            <body>
+                <iframe id="mapFrame" src="" style="display:none; width: 100%; height: 600px;"></iframe>
+            </body>
+
         </form>
     </main>
 </body>

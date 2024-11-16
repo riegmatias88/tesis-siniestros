@@ -27,21 +27,80 @@ class Siniestro:
     #Metodos Siniestro
 
     def get_siniestros(self):
-        query = "SELECT * FROM siniestro_v3"
-        return self.db.execute_select_queries(query)
+        query = """
+            SELECT * FROM siniestro_v3
+        """
+        params = ()
+        try:
+            return self.db.execute_select_queries(query,params)
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")
 
     def get_siniestro_by_id(self, id_siniestro):
-        query = "SELECT * FROM siniestro_v3 where id = %s"
+        query = """
+            SELECT * \
+            FROM siniestro_v3 where id = %s
+        """
         params = (id_siniestro,)
-        return self.db.execute_select_queries(query, params)
+        try:
+            return self.db.execute_select_queries(query,params)
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")
+
+    def get_geo_siniestro_by_id(self, id_siniestro):
+        query = """
+            SELECT latitud , longitud \
+            FROM siniestro_v3 \
+            WHERE id = %s \
+        """
+        params = (id_siniestro,)
+        try:
+            return self.db.execute_select_queries(query,params)
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")
 
     def get_siniestro_by_ubicacion(self, provincia, departamento, localidad):
         #query = "SELECT id , tipo_siniestro FROM siniestro_v3 where localidad_id IN (select localidad_id FROM localidad WHERE provincia_desc = %s AND departamento_desc = %s AND localidad_desc = %s)"
-        query = "SELECT s.id, s.fecha, s.hora, st.descripcion, sc.descripcion, v.nombre, v.altura, v.entre_calle1, v.entre_calle2 \
+        query = """
+            SELECT s.id, s.fecha, s.hora, st.descripcion, sc.descripcion, v.nombre, v.altura, v.entre_calle1, v.entre_calle2 \
             FROM siniestro_v3 s \
             INNER JOIN siniestro_tipo st ON (s.tipo=st.id) \
             INNER JOIN siniestro_categoria sc ON (s.categoria=sc.id) \
             INNER JOIN via v ON (s.via_id=v.id) \
-            WHERE s.localidad_id IN (select id FROM localidad WHERE provincia_desc = %s AND departamento_desc = %s AND localidad_desc = %s)"
+            WHERE s.localidad_id IN (select id FROM localidad WHERE provincia_desc = %s AND departamento_desc = %s AND localidad_desc = %s) \
+        """
         params = (provincia,departamento,localidad)
-        return self.db.execute_select_queries(query, params)
+        try:
+            return self.db.execute_select_queries(query,params)
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")
+
+    def get_siniestro_geo(self, provincia, departamento, localidad):
+        query = """
+            SELECT s.latitud, s.longitud \
+            FROM siniestro_v3 s \
+            INNER JOIN siniestro_tipo st ON (s.tipo=st.id) \
+            INNER JOIN siniestro_categoria sc ON (s.categoria=sc.id) \
+            INNER JOIN via v ON (s.via_id=v.id) \
+            WHERE s.localidad_id IN (select id FROM localidad WHERE provincia_desc = %s AND departamento_desc = %s AND localidad_desc = %s) \
+        """
+        params = (provincia,departamento,localidad)
+        try:
+            return self.db.execute_select_queries(query,params)
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")
+
+    def get_siniestro_zona(self, provincia, departamento, localidad):
+        query = """
+            SELECT DISTINCT s.zona \
+            FROM siniestro_v3 s \
+            INNER JOIN siniestro_tipo st ON (s.tipo=st.id) \
+            INNER JOIN siniestro_categoria sc ON (s.categoria=sc.id) \
+            INNER JOIN via v ON (s.via_id=v.id) \
+            WHERE s.localidad_id IN (select id FROM localidad WHERE provincia_desc = %s AND departamento_desc = %s AND localidad_desc = %s) \
+        """
+        params = (provincia,departamento,localidad)
+        try:
+            return self.db.execute_select_queries(query,params)
+        except Exception as e:
+            print(f"Error al consultar la tabla: {e}")
