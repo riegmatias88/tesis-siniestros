@@ -49,24 +49,34 @@ def index():
 def login():
     return render_template('login.html')
 
-# Ruta para procesar el login
 @app.route('/login', methods=['POST'])
 def login_post():
     username = request.form.get('username')
     password = request.form.get('password')
 
-    # Validación simple de credenciales (reemplazar con una lógica real)
-
-    user=usuario.has_username(username)
-    passwd=usuario.validate_password(username,password)
-    print(user,password)
-
-    if user == True and passwd == True:
-        flash("Inicio de sesión exitoso", "success")
-        return redirect(url_for('index'))  # Redirige a un dashboard o página principal
-    else:
-        flash("Usuario o contraseña incorrectos", "error")
+    # Validación de entradas
+    if not username or not password:
+        flash("Por favor, ingresa todos los campos.", "error")
         return redirect(url_for('login'))
+
+    # Validar si el usuario existe
+    user = usuario.has_username(username)
+    print(user)
+    if not user:
+        flash("Usuario no encontrado.", "error")
+        return redirect(url_for('login'))
+
+    # Validar contraseña
+    passwd = usuario.validate_password(username, password)
+    #print(passwd)
+    if not passwd:
+        flash("Contraseña incorrecta.", "error")
+        return redirect(url_for('login'))
+
+    # Si todo es correcto, iniciar sesión
+    flash("Inicio de sesión exitoso", "success")
+    session['user'] = username  # Guarda el usuario en la sesión
+    return redirect(url_for('index'))
 
 #######################################################################################
 #                              Endpoint georreferenciar

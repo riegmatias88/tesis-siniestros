@@ -14,7 +14,7 @@ class Usuario:
         query = """
             SELECT 1 \
             FROM usuario \
-            WHERE username = %s \
+            WHERE username = %s
         """
         params = (username,)
         try:
@@ -28,9 +28,9 @@ class Usuario:
             SELECT 1 \
             FROM usuario \
             WHERE username = %s \
-            AND password = %s \
+            AND password = %s
         """
-        params = (username,)
+        params = (username,password)
         try:
             resultados = self.db.execute_select_queries(query, params)
             return bool(resultados) # Devuelve True si la password es correcta resultados, False si está vacío
