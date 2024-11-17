@@ -606,13 +606,20 @@ def exportdata():
 # Definir una ruta en Flask para llamar a esta función
 @app.route('/exportsiniestro', methods=['GET'])
 def exportsiniestro():
-    export.export_siniestro()
+    try:
+        export.export_siniestro()
+        return jsonify({"message": "CSV descargado"}), 200
+    except Exception as e:
+        return jsonify({"error": "No se pudo descargar el CSV "}), 400
 
-@app.route('/exportrecomendacion')
+@app.route('/exportrecomendacion', methods=['GET'])
 def exportrecomendacion():
-    export.export_recomendacion()
-    #session.clear()
-
+    try:
+        export.export_recomendacion()
+        return jsonify({"message": "CSV descargado"}), 200
+        return render_template('logout.html')
+    except Exception as e:
+        return jsonify({"error": "No se pudo descargar el CSV "}), 400
 #######################################################################################
 #                              Endpoint logout
 #######################################################################################

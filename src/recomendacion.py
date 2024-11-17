@@ -8,8 +8,8 @@ class Recomendacion:
 
     def get_full_recomendacion(self):
         query = """
-            SELECT *
-            FROM recomendacion \
+            SELECT r.id, r.fecha, r.siniestro_id, ra.descripcion, r.via_id, r.estado \
+            FROM recomendacion r INNER JOIN recomendacion_accion ra ON (r.accion_id=ra.id) \
         """
         params = ()
         try:
