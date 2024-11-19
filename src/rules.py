@@ -22,35 +22,6 @@ def load_rules():
 
     with ruleset('recomendacion'):
 
-        #Regla 0bis
-        #@when_all(
-        #    (m.Via.Estado == 'bueno')
-        #)
-        #def ejecutar_regla0bis(c):
-        #    print("Regla 0bis activada: Estado de la vía es 'bueno'")
-        #    accion = 'REGLA 0 Bis - Recomendación: Test'
-        #    accion_id = 100
-        #    recomendacion.set_recomendacion(now, c.m.Siniestro.Id, accion_id, c.m.Via.Id, estado)
-        #    #recomendaciones.append(accion)
-        #    #print(recomendaciones)
-        #    recomendaciones.append({
-        #        "Id": accion_id,
-        #        "Fecha": now,
-        #        "Accion": accion,
-        #        "Via_Id": c.m.Via.Id,
-        #        "Estado": "pendiente"
-        #    })
-        #    c.assert_fact({
-        #        'Recomendacion': {
-        #            'Accion_Recomendada': accion
-        #        }
-        #    })
-        #    c.assert_fact({
-        #        'Recomendacion': {
-        #            'Accion_Recomendada': 'SH_Precaucion'
-        #        }
-        #    })
-
         #Regla 1
         @when_all(
             ((m.Siniestro.Participante1 == 'bicicleta') | 
@@ -556,6 +527,23 @@ def load_rules():
             c.assert_fact({
                 'Recomendacion': {
                     'Accion_Recomendada': 'SH_Precaucion'
+                }
+            })
+
+        #Regla 29
+        @when_all(
+            (m.Via.Estado == 'hundimiento') &
+            ((m.Siniestro.Tipo == 6) |
+            (m.Siniestro.Tipo == 12)) &
+            (m.Clima.Precipitaciones > 0)
+        )
+        def ejecutar_regla28(c):
+            accion_id = 9
+            recomendacion.set_recomendacion(now, c.m.Siniestro.Id, accion_id, c.m.Via.Id, estado)
+            print('REGLA 28 - Recomendación: Reparar via')
+            c.assert_fact({
+                'Recomendacion': {
+                    'Accion_Recomendada': 'Reparar_via'
                 }
             })
 

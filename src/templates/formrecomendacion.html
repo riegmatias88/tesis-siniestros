@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -6,12 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Recomendacion</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             cargarProvincias();
         });
     
         function volver() {
+            window.history.back();
+        }
+
+        function limpiar() {
             window.history.back();
         }
 
@@ -168,9 +172,13 @@
 
         function crearRecomendacion() {
 
-            // Si no hay siniestros seleccionados, mostrar una alerta
+            // Si no hay siniestros seleccionados, mostrar un mensaje con SweetAlert
             if (!selectedSiniestroId) {
-                alert("Por favor selecciona al menos un siniestro para crear una recomendación.");
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Por favor selecciona al menos un siniestro para crear una recomendación.',
+                });
                 return;
             }
 
@@ -178,23 +186,35 @@
             fetch(`/advice?siniestro_id=${encodeURIComponent(selectedSiniestroId)}`, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'                   
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({})
             })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Recomendacion generada:', data.recomendaciones)
-                    mensaje='Siniestro analizado correctamente'
-                    alert(mensaje)
-                    obtenerSiniestros()
-                })
-                .catch(error => {
-                    console.error('Error al crear la recomendación:', error);
-                    mensaje='Error al crear la recomendación'
-                    alert(mensaje);
+            .then(response => response.json())
+            .then(data => {
+                console.log('Recomendacion generada:', data.recomendaciones);
+                let mensaje = 'Siniestro analizado correctamente';
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Éxito',
+                    text: mensaje,
                 });
-        }
+
+                // Llamar a obtenerSiniestros para actualizar la vista
+                obtenerSiniestros();
+            })
+            .catch(error => {
+                console.error('Error al crear la recomendación:', error);
+                let mensaje = 'Error al crear la recomendación';
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: mensaje,
+                });
+            });
+            }
 
         function obtenerRecomendacion() {
             fetch(`/get_recomendacion?siniestro_id=${encodeURIComponent(selectedSiniestroId)}`)
@@ -352,6 +372,7 @@
                 <button id="analizar" onclick="crearRecomendacion()">Analizar siniestro</button>
                 <button id="recomendacion" onclick="obtenerRecomendacion()">Ver recomendaciones</button>
                 <button id="mapa" onclick="generarMapa()">Ver en mapa</button>
+                <button id="limpiar" onclick="limpiar()">Limpiar resultados</button>
             </div>
 
 
@@ -369,4 +390,3 @@
 </body>
 
 </html>
-

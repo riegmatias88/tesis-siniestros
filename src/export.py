@@ -44,7 +44,7 @@ def export_siniestro():
         siniestro_df.fillna('', inplace=True)
 
         # Ruta temporal para guardar el CSV
-        csv_path = 'siniestros.csv'
+        csv_path = 'csv/siniestros.csv'
         csv_content = siniestro_df.to_csv(csv_path, index=False)
         with open(csv_path, 'r') as file:
             csv_content = file.read()
@@ -93,7 +93,7 @@ def export_recomendacion():
         recomendacion_df.fillna('', inplace=True)
 
         # Ruta temporal para guardar el CSV
-        csv_path = 'recomendacion.csv'
+        csv_path = 'csv/recomendacion.csv'
         csv_content = recomendacion_df.to_csv(csv_path, index=False)
         with open(csv_path, 'r') as file:
             csv_content = file.read()

@@ -40,6 +40,7 @@ logger = logging.getLogger(__name__)
 def index():
     return render_template('index.html')
 
+
 #######################################################################################
 #                              Endpoint Login
 #######################################################################################
@@ -608,7 +609,7 @@ def exportdata():
 def exportsiniestro():
     try:
         export.export_siniestro()
-        return jsonify({"message": "CSV descargado"}), 200
+        return jsonify({"message": "CSV generado"}), 200
     except Exception as e:
         return jsonify({"error": "No se pudo descargar el CSV "}), 400
 
@@ -616,8 +617,7 @@ def exportsiniestro():
 def exportrecomendacion():
     try:
         export.export_recomendacion()
-        return jsonify({"message": "CSV descargado"}), 200
-        return render_template('logout.html')
+        return jsonify({"message": "CSV generado"}), 200
     except Exception as e:
         return jsonify({"error": "No se pudo descargar el CSV "}), 400
 #######################################################################################

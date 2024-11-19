@@ -64,6 +64,7 @@ def run_georeference(provincia, departamento, localidad):
     #data = fetch_data(db, provincia, departamento, localidad)
     data = siniestro.get_siniestro_geo(provincia, departamento, localidad)
 
+
     if isinstance(data, list):
         data = pd.DataFrame(data, columns=["latitud", "longitud"])
         print(data)

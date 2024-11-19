@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menú de Opcioes</title>
+    <title>Exportar datos</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
+        // Función para manejar las solicitudes
+        function exportData(endpoint) {
+            fetch(endpoint)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Éxito',
+                            text: data.message,
+                        });
+                    } else if (data.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error,
+                        });
+                    }
+                })
+                .catch(error => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo completar la operación.',
+                    });
+                });
+        }
+
         function volver() {
             window.history.back();
         }
@@ -13,16 +42,15 @@
 </head>
 <body>
     <header>
-        <h1>Exportar datos a CSV</h1>
+        <h1>Exportar datos</h1>
     </header>
     <nav>
         <ul>
             <h3>Seleccione los datos que desea exportar a CSV</h3>
-            <li><a href="/exportsiniestro">Siniestros</a></li>
-            <li><a href="/exportrecomendacion">Recomendaciones</a></li> 
+            <li><a href="#" onclick="exportData('/exportsiniestro'); return false;">Siniestros</a></li>
+            <li><a href="#" onclick="exportData('/exportrecomendacion'); return false;">Recomendaciones</a></li>
         </ul>
         <button type="button" onclick="volver()">Volver</button>
     </nav>
-
 </body>
 </html>

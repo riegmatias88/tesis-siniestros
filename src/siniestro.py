@@ -58,6 +58,7 @@ class Siniestro:
             return self.db.execute_select_queries(query,params)
         except Exception as e:
             print(f"Error al consultar la tabla: {e}")
+    
 
     def get_siniestro_by_ubicacion(self, provincia, departamento, localidad):
         #query = "SELECT id , tipo_siniestro FROM siniestro_v3 where localidad_id IN (select localidad_id FROM localidad WHERE provincia_desc = %s AND departamento_desc = %s AND localidad_desc = %s)"
@@ -81,7 +82,6 @@ class Siniestro:
             FROM siniestro_v3 s \
             INNER JOIN siniestro_tipo st ON (s.tipo=st.id) \
             INNER JOIN siniestro_categoria sc ON (s.categoria=sc.id) \
-            INNER JOIN via v ON (s.via_id=v.id) \
             WHERE s.localidad_id IN (select id FROM localidad WHERE provincia_desc = %s AND departamento_desc = %s AND localidad_desc = %s) \
         """
         params = (provincia,departamento,localidad)
