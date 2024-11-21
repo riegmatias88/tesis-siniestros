@@ -182,6 +182,20 @@
                 return;
             }
 
+            // Verificar si el siniestro ya está analizado
+            let siniestroSeleccionado = document.querySelector('.card.selected');
+                if (siniestroSeleccionado) {
+                    let analizado = siniestroSeleccionado.querySelector('span').textContent.includes('✓ Analizado');
+                    if (analizado) {
+                        Swal.fire({
+                            icon: 'info',
+                            title: 'Información',
+                            text: 'El siniestro ya está analizado.',
+                        });
+                        return;
+                    }
+                }
+
             // Enviar los siniestros seleccionados para crear una recomendación
             fetch(`/advice?siniestro_id=${encodeURIComponent(selectedSiniestroId)}`, {
                 method: 'POST',
