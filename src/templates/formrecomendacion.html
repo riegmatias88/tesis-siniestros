@@ -15,9 +15,88 @@
             window.history.back();
         }
 
-        function limpiar() {
-            window.history.back();
+        function limpiarSiniestros() {
+            // Obtengo los contenedores de las tarjetas
+            const siniestrosCardsContainer = document.getElementById('siniestros-cards');
+            const recomendacionesCardsContainer = document.getElementById('recomendacion-cards');
+            const tituloRecomendaciones = document.getElementById('tituloRecomendaciones');
+            const msjNoRecomendaciones = document.getElementById('msjNoRecomendaciones');
+            const botonesContainer = document.getElementById('botones-container');
+            const mapFrame = document.getElementById('mapFrame');
+            const mapTitle = document.getElementById('mapTitle');
+
+            // Limpiar el contenido de los contenedores
+            siniestrosCardsContainer.innerHTML = '';
+            recomendacionesCardsContainer.innerHTML = '';
+            
+            // Ocultar el título de recomendaciones
+            tituloRecomendaciones.style.display = 'none';
+            
+            // Ocultar mensaje de "No se encontraron recomendaciones"
+            if (msjNoRecomendaciones) {
+                msjNoRecomendaciones.innerHTML = '';
+            }
+            
+            // Ocultar los botones
+            if (botonesContainer) {
+                botonesContainer.style.display = 'none';
+            }
+            
+            // Ocultar el iframe del mapa
+            if (mapFrame) {
+                mapFrame.style.display = 'none';
+                mapFrame.src = '';
+            }
+
+            // Ocultar el título del mapa
+            if (mapTitle) {
+                mapTitle.style.display = 'none';
+            }
+
+            // Reiniciar la variable global del siniestro seleccionado
+            selectedSiniestroId = null;
+
+            console.log('Resultados limpiados correctamente.');
         }
+
+        function limpiarRecomendaciones() {
+            // Obtener los contenedores de las tarjetas
+            const siniestrosCardsContainer = document.getElementById('siniestros-cards');
+            const recomendacionesCardsContainer = document.getElementById('recomendacion-cards');
+            const tituloRecomendaciones = document.getElementById('tituloRecomendaciones');
+            const msjNoRecomendaciones = document.getElementById('msjNoRecomendaciones');
+            const botonesContainer = document.getElementById('botones-container');
+            const mapFrame = document.getElementById('mapFrame');
+            const mapTitle = document.getElementById('mapTitle');
+
+            // Limpiar las tarjetas de recomendaciones
+            recomendacionesCardsContainer.innerHTML = '';
+            
+            // Ocultar el título de recomendaciones
+            tituloRecomendaciones.style.display = 'none';
+            
+            // Ocultar mensaje de "No se encontraron recomendaciones"
+            if (msjNoRecomendaciones) {
+                msjNoRecomendaciones.innerHTML = '';
+            }
+            
+            // Ocultar el iframe del mapa
+            if (mapFrame) {
+                mapFrame.style.display = 'none';
+                mapFrame.src = '';
+            }
+
+            // Ocultar el título del mapa
+            if (mapTitle) {
+                mapTitle.style.display = 'none';
+            }
+
+            // Reiniciar la variable global del siniestro seleccionado
+            selectedSiniestroId = null;
+
+            console.log('Resultados limpiados correctamente.');
+        }
+
 
         function cargarProvincias() {
             let provinciaSelect = document.getElementById("provincia");
@@ -125,7 +204,14 @@
 
                             // Contenido de la tarjeta
                             card.innerHTML = `
-                                <h3>ID: ${siniestro.Id}</h3>
+                                <div style="text-align: center; margin-bottom: 10px;">
+                                    <h3>Siniestro #${siniestro.Id}</h3>
+                                </div>
+                                <p>
+                                    ${siniestro.Analizado 
+                                        ? '<span style="background-color: green; color: white; padding: 5px 10px; border-radius: 20px;">✓ Analizado</span>' 
+                                        : '<span style="background-color: red; color: white; padding: 5px 10px; border-radius: 20px;">⚠️ Pendiente</span>'}
+                                </p>
                                 <p><strong>Fecha:</strong> ${siniestro.Fecha}</p>
                                 <p><strong>Hora:</strong> ${siniestro.Hora}</p>
                                 <p><strong>Tipo de siniestro:</strong> ${siniestro.Tipo}</p>
@@ -134,11 +220,6 @@
                                 <p><strong>Altura:</strong> ${siniestro.Altura}</p>
                                 <p><strong>Entre calle 1:</strong> ${siniestro.Entre_calle1}</p>
                                 <p><strong>Entre calle 2:</strong> ${siniestro.Entre_calle2}</p>
-                                <p>
-                                    ${siniestro.Analizado 
-                                        ? '<span style="background-color: green; color: white; padding: 5px 10px; border-radius: 20px;">✓ Analizado</span>' 
-                                        : '<span style="background-color: red; color: white; padding: 5px 10px; border-radius: 20px;">⚠️ Pendiente</span>'}
-                                </p>
                             `;
 
                             // Lógica de selección
@@ -374,6 +455,7 @@
             </select>
             <br>
             <button type="button" onclick="obtenerSiniestros()">Ver siniestros</button>
+            <button type="button" onclick="limpiarSiniestros()">Limpiar siniestros</button>
             <button type="button" onclick="volver()">Volver</button>
             
             <br>
@@ -386,7 +468,7 @@
                 <button id="analizar" onclick="crearRecomendacion()">Analizar siniestro</button>
                 <button id="recomendacion" onclick="obtenerRecomendacion()">Ver recomendaciones</button>
                 <button id="mapa" onclick="generarMapa()">Ver en mapa</button>
-                <button id="limpiar" onclick="limpiar()">Limpiar resultados</button>
+                <button id="limpiar" onclick="limpiarRecomendaciones()">Limpiar resultados</button>
             </div>
 
 
