@@ -422,9 +422,74 @@
 
             } else {
                 alert("Error al generar el mapa");
-            }
+            }            
         }
         
+        function verDetalleSiniestro() {
+            // Verificar si hay un siniestro seleccionado
+            if (!selectedSiniestroId) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Atención',
+                    text: 'Por favor selecciona un siniestro para ver sus detalles.',
+                });
+                return;
+            }
+
+            // Realizar la consulta al backend
+            const provincia = document.getElementById('provincia').value;
+            const departamento = document.getElementById('departamento').value;
+            const localidad = document.getElementById('localidad').value;
+
+            fetch(`/get_detalle_siniestro?id=${selectedSiniestroId}&provincia=${encodeURIComponent(provincia)}&departamento=${encodeURIComponent(departamento)}&localidad=${encodeURIComponent(localidad)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.error) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.error,
+                        });
+                    } else {
+                        // Cargar los detalles en el modal
+                        const contenido = `
+                            <p><strong>ID:</strong> ${data.Id}</p>
+                            <p><strong>Fecha:</strong> ${data.Fecha}</p>
+                            <p><strong>Hora:</strong> ${data.Hora}</p>
+                            <p><strong>Franja horaria:</strong> ${data.Franja_horaria}</p>
+                            <p><strong>Latitud:</strong> ${data.Latitud}</p>
+                            <p><strong>Longitud:</strong> ${data.Longitud}</p>
+                            <p><strong>Tipo:</strong> ${data.Tipo}</p>
+                            <p><strong>Categoría:</strong> ${data.Categoria}</p>
+                            <p><strong>Participante 1:</strong> ${data.Participante1}</p>
+                            <p><strong>Participante 2:</strong> ${data.Participante2}</p>
+                            <p><strong>Flujo de tránsito:</strong> ${data.Flujo_transito}</p>
+                            <p><strong>Ubicación:</strong> ${data.Ubicacion_siniestro_via}</p>
+                            <p><strong>Vía:</strong> ${data.Via_nombre} - Altura ${data.Via_altura}</p>
+                            <p><strong>Entre calles:</strong> ${data.Entre_calle1} - ${data.Entre_calle2}</p>
+                        `;
+                        document.getElementById('detalleSiniestroContenido').innerHTML = contenido;
+
+                        // Mostrar el modal
+                        document.getElementById('detalleSiniestroModal').style.display = 'block';
+                        document.getElementById('modalOverlay').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener el detalle del siniestro:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'No se pudo obtener el detalle del siniestro.',
+                    });
+                });
+        }
+
+        
+        function cerrarModal() {
+            document.getElementById('detalleSiniestroModal').style.display = 'none';
+            document.getElementById('modalOverlay').style.display = 'none';
+        }
     </script>
 </head>
 
@@ -455,6 +520,7 @@
             </select>
             <br>
             <button type="button" onclick="obtenerSiniestros()">Ver siniestros</button>
+            <button type="button" onclick="verDetalleSiniestro()">Ver detalle de siniestro</button>
             <button type="button" onclick="limpiarSiniestros()">Limpiar siniestros</button>
             <button type="button" onclick="volver()">Volver</button>
             
@@ -483,6 +549,14 @@
 
         </form>
     </main>
+    <div id="detalleSiniestroModal" style="display: none; position: fixed; top: 10%; left: 50%; transform: translate(-50%, 0); z-index: 1000; background-color: #333333; color: white; padding: 20px; border-radius: 8px; box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2); width: 50%; max-width: 600px; height: 70%; max-height: 700px; overflow-y: auto;">
+        <h3 style="margin-bottom: 20px; text-align: center; color: #FFD700;">Detalle del Siniestro</h3>
+        <div id="detalleSiniestroContenido" style="text-align: left; line-height: 1.8;">
+            <!-- Aquí se cargará el contenido dinámico -->
+        </div>
+        <button type="button" onclick="cerrarModal()" style="color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; display: block; margin: 20px auto 0;">Cerrar</button>
+    </div>
+    <div id="modalOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 999;"></div>
 </body>
 
 </html>

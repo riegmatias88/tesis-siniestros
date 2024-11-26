@@ -367,6 +367,51 @@ def get_siniestros():
     except Exception as e:
         return jsonify({"error": f"Error al obtener siniestros: {str(e)}"}), 500
 
+@app.route('/get_detalle_siniestro', methods=['GET'])
+def get_detalle_siniestro():
+    # Obtener parámetros de la solicitud
+    siniestro_id = request.args.get('id', type=int)
+    provincia_desc = request.args.get('provincia')
+    departamento_desc = request.args.get('departamento')
+    localidad_desc = request.args.get('localidad')
+
+    # Validar parámetros
+    if not (siniestro_id and provincia_desc and departamento_desc and localidad_desc):
+        return jsonify({"error": "Faltan parámetros: id, provincia, departamento o localidad"}), 400
+
+    try:
+        # Llamar a la función para obtener los detalles
+        resultado = siniestro.get_siniestro_detalle(provincia_desc, departamento_desc, localidad_desc, siniestro_id)
+
+        # Validar si se encontró el siniestro
+        if resultado:
+            # Transformar el resultado en un diccionario
+            siniestro_data = {
+                "Id": resultado[0][0],
+                "Fecha": str(resultado[0][1]),
+                "Hora": str(resultado[0][2]),
+                "Franja_horaria": resultado[0][3],
+                "Latitud": resultado[0][4],
+                "Longitud": resultado[0][5],
+                "Tipo": resultado[0][6],
+                "Categoria": resultado[0][7],
+                "Participante1": resultado[0][8],
+                "Participante2": resultado[0][9],
+                "Flujo_transito": resultado[0][10],
+                "Ubicacion_siniestro_via": resultado[0][11],
+                "Via_nombre": resultado[0][12],
+                "Via_altura": resultado[0][13],
+                "Entre_calle1": resultado[0][14],
+                "Entre_calle2": resultado[0][15],
+            }
+            return jsonify(siniestro_data), 200
+        else:
+            return jsonify({"error": "Siniestro no encontrado"}), 404
+
+    except Exception as e:
+        app.logger.error(f"Error al obtener el detalle del siniestro: {str(e)}")
+        return jsonify({"error": f"Error interno: {str(e)}"}), 500
+
 
 # Cargar las reglas
 load_rules()
@@ -635,4 +680,4 @@ def logout():
 
 if __name__ == "__main__":
     #app.run(debug=True)
-    app.run(host='127.0.0.1', port=8080, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)

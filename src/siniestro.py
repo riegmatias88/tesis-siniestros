@@ -104,3 +104,24 @@ class Siniestro:
             return self.db.execute_select_queries(query,params)
         except Exception as e:
             print(f"Error al consultar la tabla: {e}")
+
+    def get_siniestro_detalle(self, provincia_desc, departamento_desc, localidad_desc, siniestro_id):
+        query = """
+            SELECT 
+                s.id, s.fecha, s.hora, s.franja_horaria, s.latitud, s.longitud, 
+                st.descripcion AS tipo, sc.descripcion AS categoria, 
+                s.participante1, s.participante2, s.flujo_transito, 
+                s.ubicacion_siniestro_via, v.nombre AS via_nombre, v.altura AS via_altura, 
+                v.entre_calle1, v.entre_calle2
+            FROM siniestro_v3 s
+            INNER JOIN siniestro_tipo st ON s.tipo = st.id
+            INNER JOIN siniestro_categoria sc ON s.categoria = sc.id
+            INNER JOIN via v ON s.via_id = v.id
+            WHERE s.id = %s 
+            AND s.localidad_id IN (
+                SELECT id FROM localidad 
+                WHERE provincia_desc = %s AND departamento_desc = %s AND localidad_desc = %s
+            )
+        """
+        params = (siniestro_id, provincia_desc, departamento_desc, localidad_desc)
+        return self.db.execute_select_queries(query, params)
